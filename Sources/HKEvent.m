@@ -3,7 +3,7 @@
  *  HotKeyToolKit
  *
  *  Created by Jean-Daniel Dupas.
- *  Copyright © 2004 - 2011 Shadow Lab. All rights reserved.
+ *  Copyright © 2004 - 2012 Shadow Lab. All rights reserved.
  */
 
 #import "HKEvent.h"
@@ -96,7 +96,7 @@ Boolean _HKEventPostCharacterKeystrokes(UniChar character, CGEventSourceRef sour
 
   HKKeycode keys[8];
   HKModifier mods[8];
-  NSUInteger count = HKMapGetKeycodesAndModifiersForUnichar(character, keys, mods, 8);
+  NSUInteger count = [[HKKeyMap currentKeyMap] getKeycodes:keys modifiers:mods maxLength:8 forCharacter:character];
   for (NSUInteger idx = 0; idx < count; idx++) {
     _HKEventPostKeyStroke(keys[idx], mods[idx], source, psn, latency);
   }
@@ -218,7 +218,7 @@ ProcessSerialNumber _HKGetProcessWithBundleIdentifier(CFStringRef bundleId) {
       target.psn = &psn;
       type = kHKEventTargetProcess;
     }
-    HKEventPostKeystrokeToTarget([self keycode], [self nativeModifier], target, type, NULL, latency);
+    HKEventPostKeystrokeToTarget(self.keycode, self.nativeModifier, target, type, NULL, latency);
   } else {
     return NO;
   }
@@ -236,11 +236,11 @@ ProcessSerialNumber _HKGetProcessWithBundleIdentifier(CFStringRef bundleId) {
       target.signature = signature;
       type = kHKEventTargetSignature;
     } else if (bundleId) {
-      target.bundle = WBNSToCFString(bundleId);
+      target.bundle = SPXNSToCFString(bundleId);
       type = kHKEventTargetBundle;
     }
 
-    result = HKEventPostKeystrokeToTarget([self keycode], [self nativeModifier], target, type, NULL, latency);
+    result = HKEventPostKeystrokeToTarget(self.keycode, self.nativeModifier, target, type, NULL, latency);
   }
   return result;
 }

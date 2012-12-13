@@ -3,7 +3,7 @@
  *  HotKeyToolKit
  *
  *  Created by Jean-Daniel Dupas.
- *  Copyright © 2004 - 2011 Shadow Lab. All rights reserved.
+ *  Copyright © 2004 - 2012 Shadow Lab. All rights reserved.
  */
 
 #import "HKKeyMap.h"
@@ -22,7 +22,7 @@ OSStatus _HandleHotKeyEvent(EventHandlerCallRef nextHandler, EventRef theEvent, 
 static
 OSStatus HKRegisterHotKey(HKKeycode keycode, HKModifier modifier, EventHotKeyID hotKeyId, EventHotKeyRef *outRef) {
   /* Convert from cocoa to carbon */
-  UInt32 mask = (UInt32)HKUtilsConvertModifier(modifier, kHKModifierFormatNative, kHKModifierFormatCarbon);
+  UInt32 mask = (UInt32)HKModifierConvert(modifier, kHKModifierFormatNative, kHKModifierFormatCarbon);
   return RegisterEventHotKey(keycode, mask,hotKeyId, GetApplicationEventTarget(), 0, outRef);
 }
 
@@ -61,15 +61,15 @@ static HKHotKeyManager *sManager = nil;
 
     OSStatus err = InstallApplicationEventHandler(_HandleHotKeyEvent, GetEventTypeCount(eventTypes), eventTypes, (__bridge void *)self, &ref);
     if (noErr != err) {
-      WBLogError(@"Event handler creation failed: %s", GetMacOSStatusCommentString(err));
-      wb_release(self);
+      SPXLogError(@"Event handler creation failed: %s", GetMacOSStatusCommentString(err));
+      [self autorelease];
       self = nil;
     } else {
-      hk_handler = ref;
+      _handler = ref;
       /* UInt32 uid => HKHotKey */
-      hk_keys = NSCreateMapTable(NSIntegerMapKeyCallBacks, NSNonRetainedObjectMapValueCallBacks, 0);
+      _keys = NSCreateMapTable(NSIntegerMapKeyCallBacks, NSNonRetainedObjectMapValueCallBacks, 0);
       /* HKHotKey => EventHotKeyRef */
-      hk_refs = NSCreateMapTable(NSNonRetainedObjectMapKeyCallBacks, NSNonOwnedPointerMapValueCallBacks, 0);
+      _refs = NSCreateMapTable(NSNonRetainedObjectMapKeyCallBacks, NSNonOwnedPointerMapValueCallBacks, 0);
     }
   }
   return self;
@@ -77,18 +77,18 @@ static HKHotKeyManager *sManager = nil;
 
 - (void)dealloc {
   [self unregisterAll];
-  if (hk_refs) NSFreeMapTable(hk_refs);
-  if (hk_keys) NSFreeMapTable(hk_keys);
-  if (hk_handler) RemoveEventHandler(hk_handler);
-  wb_dealloc();
+  if (_handler) RemoveEventHandler(_handler);
+  if (_refs) NSFreeMapTable(_refs);
+  if (_keys) NSFreeMapTable(_keys);
+  [super dealloc];
 }
 
 //MARK: -
 - (BOOL)registerHotKey:(HKHotKey *)key {
   // Si la cle est valide est non enregistré
-  if ([key isValid] && !NSMapGet(hk_refs, (__bridge void *)key)) {
-    HKModifier mask = [key nativeModifier];
-    HKKeycode keycode = [key keycode];
+  if ([key isValid] && !NSMapGet(_refs, (__bridge void *)key)) {
+    HKModifier mask = key.nativeModifier;
+    HKKeycode keycode = key.keycode;
     NSUInteger uid = ++gHotKeyUID;
 
     if (HKTraceHotKeyEvents)
@@ -97,8 +97,8 @@ static HKHotKeyManager *sManager = nil;
     EventHotKeyRef ref = NULL;
     EventHotKeyID hotKeyId = { kHKHotKeyEventSignature, (UInt32)uid };
     if (noErr == HKRegisterHotKey(keycode, mask, hotKeyId, &ref)) {
-      NSMapInsert(hk_refs, (__bridge void *)key, ref);
-      NSMapInsert(hk_keys, (void *)uid, (__bridge void *)key);
+      NSMapInsert(_refs, (__bridge void *)key, ref);
+      NSMapInsert(_keys, (void *)uid, (__bridge void *)key);
       return YES;
     }
   }
@@ -106,8 +106,8 @@ static HKHotKeyManager *sManager = nil;
 }
 
 - (BOOL)unregisterHotKey:(HKHotKey *)key {
-  if (NSMapGet(hk_refs, (__bridge void *)key) /* [key isRegistred] */) {
-    EventHotKeyRef ref = NSMapGet(hk_refs, (__bridge void *)key);
+  if (NSMapGet(_refs, (__bridge void *)key) /* [key isRegistred] */) {
+    EventHotKeyRef ref = NSMapGet(_refs, (__bridge void *)key);
     NSAssert(ref != nil, @"Unable to find Carbon HotKey Handler");
     if (!ref) return NO;
 
@@ -116,16 +116,16 @@ static HKHotKeyManager *sManager = nil;
       if (HKTraceHotKeyEvents)
         NSLog(@"Unregister HotKey: %@", key);
 
-      NSMapRemove(hk_refs, (__bridge void *)key);
+      NSMapRemove(_refs, (__bridge void *)key);
 
       /* Remove from keys record */
       intptr_t uid = 0;
       void *hkeyptr = nil;
-      NSMapEnumerator refs = NSEnumerateMapTable(hk_keys);
+      NSMapEnumerator refs = NSEnumerateMapTable(_keys);
       while (NSNextMapEnumeratorPair(&refs, (void **)&uid, &hkeyptr)) {
         HKHotKey *hkey = (__bridge HKHotKey *)hkeyptr;
         if (hkey == key) {
-          NSMapRemove(hk_keys, (void *)uid);
+          NSMapRemove(_keys, (void *)uid);
           break;
         }
       }
@@ -139,14 +139,14 @@ static HKHotKeyManager *sManager = nil;
 - (void)unregisterAll {
   EventHotKeyRef ref = NULL;
 
-  NSMapEnumerator refs = NSEnumerateMapTable(hk_refs);
+  NSMapEnumerator refs = NSEnumerateMapTable(_refs);
   while (NSNextMapEnumeratorPair(&refs, NULL, (void **)&ref)) {
     if (ref)
       HKUnregisterHotKey(ref);
   }
   NSEndMapTableEnumeration(&refs);
-  NSResetMapTable(hk_refs);
-  NSResetMapTable(hk_keys);
+  NSResetMapTable(_refs);
+  NSResetMapTable(_keys);
 }
 
 - (OSStatus)handleCarbonEvent:(EventRef)theEvent {
@@ -171,36 +171,31 @@ static HKHotKeyManager *sManager = nil;
             NSFileTypeForHFSTypeCode(hotKeyID.signature),
             (long)hotKeyID.id);
     }
-    HKHotKey *hotKey = (__bridge HKHotKey *)NSMapGet(hk_keys, (void *)(intptr_t)hotKeyID.id);
+    HKHotKey *hotKey = (__bridge HKHotKey *)NSMapGet(_keys, (void *)(intptr_t)hotKeyID.id);
     if (hotKey) {
-      hk_event = theEvent;
       switch(GetEventKind(theEvent)) {
         case kEventHotKeyPressed:
-          [self hotKeyPressed:hotKey];
+          [self hotKeyPressed:hotKey at:GetEventTime(theEvent)];
           break;
         case kEventHotKeyReleased:
-          [self hotKeyReleased:hotKey];
+          [self hotKeyReleased:hotKey at:GetEventTime(theEvent)];
           break;
         default:
-          DLog(@"Unknown event kind");
+          SPXDebug(@"Unknown event kind");
           break;
       }
-      hk_event = NULL;
     } else {
-      DLog(@"Invalid hotkey id!");
+      SPXDebug(@"Invalid hotkey id!");
     }
   }
   return err;
 }
 
-- (NSTimeInterval)currentEventTime {
-  return hk_event ? GetEventTime((EventRef)hk_event) : 0;
+- (void)hotKeyPressed:(HKHotKey *)key at:(NSTimeInterval)aTime {
+  [key keyPressed:aTime];
 }
-- (void)hotKeyPressed:(HKHotKey *)key {
-  [key keyPressed];
-}
-- (void)hotKeyReleased:(HKHotKey *)key {
-  [key keyReleased];
+- (void)hotKeyReleased:(HKHotKey *)key at:(NSTimeInterval)aTime {
+  [key keyReleased:aTime];
 }
 
 @end

@@ -3,7 +3,7 @@
  *  HotKeyToolKit
  *
  *  Created by Jean-Daniel Dupas.
- *  Copyright © 2004 - 2011 Shadow Lab. All rights reserved.
+ *  Copyright © 2004 - 2012 Shadow Lab. All rights reserved.
  */
 /*!
  @header HKHotKeyManager
@@ -15,33 +15,28 @@
 
 /*!
  @class 		HKHotKeyManager
- @abstract   HotKeyManager is used to register and unregister HKHotKey. It dispatch Global HotKey event.
+ @abstract   HotKeyManager is used to register and unregister HKHotKey. It dispatches Global HotKey event.
  */
 HK_OBJC_EXPORT
 @interface HKHotKeyManager : NSObject {
 @private
-  void *hk_handler; /* EventHandlerRef */
-  NSMapTable *hk_refs;
-  NSMapTable *hk_keys;
-  /* temp */
-  void *hk_event; // EventRef
+  void *_handler; /* EventHandlerRef */
+  NSMapTable *_refs;
+  NSMapTable *_keys;
 }
 
 /*!
- @method     sharedManager
  @abstract   Returns the shared HKHotKeyManager instance.
  */
 + (HKHotKeyManager *)sharedManager;
 
 /*!
- @method     registerHotKey:
  @abstract   Try to register an HKHotKey as Gloab System HotKey.
  @param		key The HKHotKey you want to register
  @result		YES if the key is succesfully registred.
  */
 - (BOOL)registerHotKey:(HKHotKey *)key;
 /*!
- @method     unregisterHotKey:
  @abstract   Try to unregister an HKHotKey as System HotKey.
  @param		key The HKHotKey you want to unregister
  @result		Returns YES if the key is succesfully unregistred.
@@ -49,15 +44,13 @@ HK_OBJC_EXPORT
 - (BOOL)unregisterHotKey:(HKHotKey *)key;
 
 /*!
- @method     unregisterAll
  @abstract   Unregister all registred keys.
  */
 - (void)unregisterAll;
 
 /* Protected */
-- (NSTimeInterval)currentEventTime;
-- (void)hotKeyPressed:(HKHotKey *)key;
-- (void)hotKeyReleased:(HKHotKey *)key;
+- (void)hotKeyPressed:(HKHotKey *)key at:(NSTimeInterval)aTime;
+- (void)hotKeyReleased:(HKHotKey *)key at:(NSTimeInterval)aTime;
 
 @end
 

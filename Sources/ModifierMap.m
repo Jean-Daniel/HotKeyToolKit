@@ -3,7 +3,7 @@
  *  HotKeyToolKit
  *
  *  Created by Jean-Daniel Dupas.
- *  Copyright © 2004 - 2011 Shadow Lab. All rights reserved.
+ *  Copyright © 2004 - 2012 Shadow Lab. All rights reserved.
  */
 
 #import "HKKeyMap.h"
@@ -114,7 +114,7 @@ NSUInteger _HKUtilsConvertModifier(NSUInteger modifier, const HKModifierMap *map
   return result;
 }
 
-NSUInteger HKUtilsConvertModifier(NSUInteger modifier, HKModifierFormat input, HKModifierFormat output) {
+NSUInteger HKModifierConvert(NSUInteger modifier, HKModifierFormat input, HKModifierFormat output) {
   const HKModifierMap *map = NULL;
   switch (input) {
     case kHKModifierFormatNative:

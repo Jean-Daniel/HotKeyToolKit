@@ -3,12 +3,14 @@
  *  HotKeyToolKit
  *
  *  Created by Jean-Daniel Dupas.
- *  Copyright © 2004 - 2011 Shadow Lab. All rights reserved.
+ *  Copyright © 2004 - 2012 Shadow Lab. All rights reserved.
  */
 
-#include <Carbon/Carbon.h>
-#import "HKKeyMap.h"
 #import "HKKeymapInternal.h"
+
+#include <Carbon/Carbon.h>
+
+#import "HKKeyMap.h"
 
 #pragma mark Flat and deflate
 /* Flat format:
@@ -124,20 +126,12 @@ typedef struct _UchrContext {
 } UchrContext;
 
 static
-UniChar UchrBaseCharacterForKeyCode(UchrContext *ctxt, HKKeycode keycode) {
-  if (keycode < 128) {
-    return ctxt->map[keycode];
-  }
-  return kHKNilUnichar;
-}
-
-static
 UniChar UchrCharacterForKeyCodeAndKeyboard(const UCKeyboardLayout *layout, HKKeycode keycode, HKModifier modifiers) {
   UniChar string[3];
   SInt32 type = LMGetKbdType();
   UInt32 deadKeyState = 0;
   UniCharCount stringLength = 0;
-  UInt32 ucModifiers = (UInt32)(HKUtilsConvertModifier(modifiers, kHKModifierFormatNative, kHKModifierFormatCarbon) >> 8) & 0xff;
+  UInt32 ucModifiers = (UInt32)(HKModifierConvert(modifiers, kHKModifierFormatNative, kHKModifierFormatCarbon) >> 8) & 0xff;
   OSStatus err = UCKeyTranslate (layout,
                                  keycode, kUCKeyActionDown, ucModifiers,
                                  type, 0, &deadKeyState,
@@ -158,6 +152,9 @@ UniChar UchrCharacterForKeyCodeAndKeyboard(const UCKeyboardLayout *layout, HKKey
 
 static
 UniChar UchrCharacterForKeyCode(UchrContext *ctxt, HKKeycode keycode, HKModifier modifiers) {
+  // fast path
+  if (!modifiers && keycode < 128)
+    return ctxt->map[keycode];
   return UchrCharacterForKeyCodeAndKeyboard(ctxt->layout, keycode, modifiers);
 }
 
@@ -258,8 +255,7 @@ bool __HKMapInsertIfBetter(CFMutableDictionaryRef table, void *key, HKKeycode co
 
 OSStatus HKKeyMapContextWithUchrData(const UCKeyboardLayout *layout, Boolean reverse, HKKeyMapContext *ctxt) {
   ctxt->dealloc = UchrContextDealloc;
-  ctxt->baseMap = (HKBaseCharacterForKeyCodeFunction)UchrBaseCharacterForKeyCode;
-  ctxt->fullMap = (HKCharacterForKeyCodeFunction)UchrCharacterForKeyCode;
+  ctxt->map = (HKCharacterForKeyCodeFunction)UchrCharacterForKeyCode;
   ctxt->reverseMap = (HKKeycodesForCharacterFunction)UchrKeycodesForCharacter;
 
   // Allocate UCHR Context
@@ -359,7 +355,7 @@ OSStatus HKKeyMapContextWithUchrData(const UCKeyboardLayout *layout, Boolean rev
     for (NSUInteger idx = 0; idx < records->keyStateRecordCount; idx++) {
       NSUInteger code = (NSUInteger)CFDictionaryGetValue(deadr, (void *)idx);
       if (0 == code) {
-        WBCLogWarning("Unreachable block: %tu", idx);
+        spx_log_warning("Unreachable block: %tu", idx);
       } else {
         const UCKeyStateRecord *record = (const UCKeyStateRecord *)(data + records->keyStateRecordOffsets[idx]);
         if (record->stateZeroCharData != 0 && record->stateZeroNextState == 0) {
@@ -410,7 +406,7 @@ OSStatus HKKeyMapContextWithUchrData(const UCKeyboardLayout *layout, Boolean rev
               entry++;
             }
           } else if (kUCKeyStateEntryRangeFormat == record->stateEntryFormat) {
-            WBCLogWarning("Range entry not implemented");
+            spx_log_warning("Range entry not implemented");
           }
         } // reverse
       }
@@ -452,24 +448,23 @@ void KCHRContextDealloc(HKKeyMapContext *ctxt) {
 }
 
 static
-UniChar KCHRBaseCharacterForKeyCode(KCHRContext *ctxt, HKKeycode keycode) {
-  if (keycode < 128)
-    return ctxt->map[keycode];
-  return kHKNilUnichar;
-}
-
-static
 UniChar KCHRCharacterForKeyCode(KCHRContext *ctxt, HKKeycode keycode, HKModifier modifiers) {
+  if (!modifiers && keycode < 128)
+    return ctxt->map[keycode];
+
   UInt32 state = 0;
   UInt32 keyTrans = 0;
   unsigned char result;
-  UInt32 kcModifiers = HKUtilsConvertModifier(modifiers, kHKModifierFormatNative, kHKModifierFormatCarbon);
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated"
+  UInt32 kcModifiers = HKModifierConvert(modifiers, kHKModifierFormatNative, kHKModifierFormatCarbon);
   keyTrans = KeyTranslate(ctxt->layout, keycode | kcModifiers, &state); /* try to convert */
   /* si result == 0 and deadkey state isn't 0... */
   if (keyTrans == 0 && state != 0) {
     /* ...try to resolve deadkey */
     keyTrans = KeyTranslate(ctxt->layout, kHKVirtualSpaceKey, &state);
   }
+#pragma clang diagnostic pop
   result = keyTrans;
   if (!result)
     result = (keyTrans >> 16);
@@ -508,13 +503,12 @@ NSUInteger KCHRKeycodesForCharacter(KCHRContext *ctxt, UniChar character, HKKeyc
 }
 
 static
-CFMutableDictionaryRef _UpgradeToUnicode(ScriptCode script, UInt32 *keys, UInt32 count, UniChar *umap, Boolean reverse);
+CFMutableDictionaryRef _UpgradeToUnicode(ScriptCode script, UInt32 *keys, UInt32 count, UniChar *umap, Boolean reverse) CF_RETURNS_RETAINED;
 
 #pragma mark -
 OSStatus HKKeyMapContextWithKCHRData(const void *layout, Boolean reverse, HKKeyMapContext *ctxt) {
   ctxt->dealloc = KCHRContextDealloc;
-  ctxt->baseMap = (HKBaseCharacterForKeyCodeFunction)KCHRBaseCharacterForKeyCode;
-  ctxt->fullMap = (HKCharacterForKeyCodeFunction)KCHRCharacterForKeyCode;
+  ctxt->map = (HKCharacterForKeyCodeFunction)KCHRCharacterForKeyCode;
   ctxt->reverseMap = (HKKeycodesForCharacterFunction)KCHRKeycodesForCharacter;
 
   // Allocate KCHR Context
@@ -676,7 +670,7 @@ CFMutableDictionaryRef _UpgradeToUnicode(ScriptCode script, UInt32 *keys, UInt32
               CFDictionarySetValue(map, (void *)k, (void *)v);
           }
         } else {
-          WBCLogWarning("Unable to convert char (%d): 0x%x, len: %lu", (int32_t)err, idx, len);
+          spx_log_warning("Unable to convert char (%d): 0x%x, len: %lu", (int32_t)err, idx, len);
         }
       }
     }

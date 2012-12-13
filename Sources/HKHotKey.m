@@ -3,7 +3,7 @@
  *  HotKeyToolKit
  *
  *  Created by Jean-Daniel Dupas.
- *  Copyright © 2004 - 2011 Shadow Lab. All rights reserved.
+ *  Copyright © 2004 - 2012 Shadow Lab. All rights reserved.
  */
 
 #import "HKHotKey.h"
@@ -16,57 +16,68 @@
 
 @interface HKHotKey ()
 - (void)hk_invalidateTimer;
-- (BOOL)shouldChangeKeystroke;
 - (void)hk_invoke:(NSTimer *)timer;
 @end
 
-static __inline__
+HK_INLINE
 CFTimeInterval __HKEventTime(void) {
-  return WBHostTimeToTimeInterval(WBHostTimeGetCurrent());
+  return SPXHostTimeToTimeInterval(SPXHostTimeGetCurrent());
 }
 
 @implementation HKHotKey
 
+@synthesize target = _target;
+@synthesize action = _action;
+
+@synthesize keycode = _keycode;
+@synthesize character = _character;
+@synthesize nativeModifier = _mask;
+
+@synthesize eventTime = _eventTime;
+
+@synthesize repeatInterval = _repeatInterval;
+@synthesize initialRepeatInterval = _iRepeatInterval;
+
 - (id)copyWithZone:(NSZone *)zone {
   HKHotKey *copy = [[[self class] allocWithZone:zone] init];
-  copy->hk_target = hk_target;
-  copy->hk_action = hk_action;
+  copy->_target = _target;
+  copy->_action = _action;
 
-  copy->hk_mask = hk_mask;
-  copy->hk_keycode = hk_keycode;
-  copy->hk_character = hk_character;
+  copy->_mask = _mask;
+  copy->_keycode = _keycode;
+  copy->_character = _character;
 
-  copy->hk_repeatTimer = nil;
-  copy->hk_repeatInterval = hk_repeatInterval;
+  copy->_repeatTimer = nil;
+  copy->_repeatInterval = _repeatInterval;
 
   /* Key isn't registred */
-  copy->hk_hkFlags.onrelease = hk_hkFlags.onrelease;
+  copy->_hkFlags.onrelease = _hkFlags.onrelease;
   return copy;
 }
 
 - (void)encodeWithCoder:(NSCoder *)aCoder {
-  [aCoder encodeConditionalObject:hk_target forKey:@"HKTarget"];
-  [aCoder encodeObject:NSStringFromSelector(hk_action) forKey:@"HKAction"];
+  [aCoder encodeConditionalObject:_target forKey:@"HKTarget"];
+  [aCoder encodeObject:NSStringFromSelector(_action) forKey:@"HKAction"];
 
-  [aCoder encodeInt32:hk_mask forKey:@"HKMask"];
-  [aCoder encodeInt32:hk_keycode forKey:@"HKKeycode"];
-  [aCoder encodeInt32:hk_character forKey:@"HKCharacter"];
+  [aCoder encodeInt32:_mask forKey:@"HKMask"];
+  [aCoder encodeInt32:_keycode forKey:@"HKKeycode"];
+  [aCoder encodeInt32:_character forKey:@"HKCharacter"];
 
-  [aCoder encodeDouble:hk_repeatInterval forKey:@"HKRepeatInterval"];
+  [aCoder encodeDouble:_repeatInterval forKey:@"HKRepeatInterval"];
 }
 
 - (id)initWithCoder:(NSCoder *)aCoder {
   if (self = [super init]) {
-    hk_target = [aCoder decodeObjectForKey:@"HKTarget"];
+    _target = [aCoder decodeObjectForKey:@"HKTarget"];
     NSString *action = [aCoder decodeObjectForKey:@"HKAction"];
     if (action)
-      hk_action = NSSelectorFromString(action);
+      _action = NSSelectorFromString(action);
 
-    hk_mask = [aCoder decodeInt32ForKey:@"HKMask"];
-    hk_keycode = [aCoder decodeInt32ForKey:@"HKKeycode"];
-    hk_character = [aCoder decodeInt32ForKey:@"HKCharacter"];
+    _mask = [aCoder decodeInt32ForKey:@"HKMask"];
+    _keycode = [aCoder decodeInt32ForKey:@"HKKeycode"];
+    _character = [aCoder decodeInt32ForKey:@"HKCharacter"];
 
-    hk_repeatInterval = [aCoder decodeDoubleForKey:@"HKRepeatInterval"];
+    _repeatInterval = [aCoder decodeDoubleForKey:@"HKRepeatInterval"];
   }
   return self;
 }
@@ -74,13 +85,13 @@ CFTimeInterval __HKEventTime(void) {
 #pragma mark -
 #pragma mark Convenient constructors.
 + (id)hotkey {
-  return wb_autorelease([[self alloc] init]);
+  return [[[self alloc] init] autorelease];
 }
 + (id)hotkeyWithKeycode:(HKKeycode)code modifier:(NSUInteger)modifier {
-  return wb_autorelease([[self alloc] initWithKeycode:code modifier:modifier]);
+  return [[[self alloc] initWithKeycode:code modifier:modifier] autorelease];
 }
 + (id)hotkeyWithUnichar:(UniChar)character modifier:(NSUInteger)modifier {
-  return wb_autorelease([[self alloc] initWithUnichar:character modifier:modifier]);
+  return [[[self alloc] initWithUnichar:character modifier:modifier] autorelease];
 }
 
 #pragma mark -
@@ -88,8 +99,8 @@ CFTimeInterval __HKEventTime(void) {
 
 - (id)init {
   if (self = [super init]) {
-    hk_character = kHKNilUnichar;
-    hk_keycode = kHKInvalidVirtualKeyCode;
+    _character = kHKNilUnichar;
+    _keycode = kHKInvalidVirtualKeyCode;
   }
   return self;
 }
@@ -112,18 +123,18 @@ CFTimeInterval __HKEventTime(void) {
 
 - (void)dealloc {
   if ([self isRegistred]) {
-    WBLogWarning(@"Releasing a registred hotkey is not safe !");
+    SPXLogWarning(@"Releasing a registred hotkey is not safe !");
     [self hk_invalidateTimer];
     [self setRegistred:NO];
   }
-  wb_dealloc();
+  [super dealloc];
 }
 
 - (NSString *)description {
   return [NSString stringWithFormat:@"<%@ %p> {keycode:%#x character:%#x modifier:%#x repeat:%f isRegistred:%@ }",
-    [self class], self,
-    [self keycode], [self character], [self modifier], [self repeatInterval],
-    ([self isRegistred] ? @"YES" : @"NO")];
+          [self class], self,
+          [self keycode], [self character], (unsigned int)[self modifier], [self repeatInterval],
+          ([self isRegistred] ? @"YES" : @"NO")];
 }
 
 #pragma mark -
@@ -134,107 +145,90 @@ CFTimeInterval __HKEventTime(void) {
 }
 
 - (NSString*)shortcut {
-  return HKMapGetStringRepresentationForCharacterAndModifier(self.character, hk_mask);
+  return [HKKeyMap stringRepresentationForCharacter:self.character modifiers:_mask];
 }
 
 #pragma mark -
 #pragma mark iVar Accessors.
-- (BOOL)shouldChangeKeystroke {
-  if ([self isRegistred]) {
-		WBThrowException(NSInvalidArgumentException, @"Cannot change keystroke when the receiver is registred");
-  }
-  return YES;
+HK_INLINE
+void _checkNotRegistred(HKHotKey *self) {
+  if ([self isRegistred])
+		SPXThrowException(NSInvalidArgumentException, @"Cannot change keystroke when the receiver is registred");
 }
 
 - (NSUInteger)modifier {
-  return HKUtilsConvertModifier(hk_mask, kHKModifierFormatNative, kHKModifierFormatCocoa);
+  return HKModifierConvert(_mask, kHKModifierFormatNative, kHKModifierFormatCocoa);
 }
 - (void)setModifier:(NSUInteger)modifier {
-  if ([self shouldChangeKeystroke])
-    hk_mask = (HKModifier)HKUtilsConvertModifier(modifier, kHKModifierFormatCocoa, kHKModifierFormatNative);
+  _checkNotRegistred(self);
+  _mask = (HKModifier)HKModifierConvert(modifier, kHKModifierFormatCocoa, kHKModifierFormatNative);
 }
-
-@synthesize nativeModifier = hk_mask;
 
 - (void)setNativeModifier:(HKModifier)modifier {
-  if ([self shouldChangeKeystroke])
-    hk_mask = modifier;
+  _checkNotRegistred(self);
+  _mask = modifier;
 }
-
-@synthesize keycode = hk_keycode;
 
 - (void)setKeycode:(HKKeycode)keycode {
-  if ([self shouldChangeKeystroke]) {
-    hk_keycode = keycode;
-    [self willChangeValueForKey:WBProperty(character)];
-    if (hk_keycode != kHKInvalidVirtualKeyCode)
-      hk_character = HKMapGetUnicharForKeycode(hk_keycode);
-    else
-      hk_character = kHKNilUnichar;
-    [self didChangeValueForKey:WBProperty(character)];
-  }
+  _checkNotRegistred(self);
+  _keycode = keycode;
+  [self willChangeValueForKey:SPXProperty(character)];
+  if (_keycode != kHKInvalidVirtualKeyCode)
+    _character = [[HKKeyMap currentKeyMap] characterForKeycode:_keycode];
+  else
+    _character = kHKNilUnichar;
+  [self didChangeValueForKey:SPXProperty(character)];
 }
 
-@synthesize character = hk_character;
-
 - (void)setCharacter:(UniChar)character {
-  if ([self shouldChangeKeystroke])
-    [self setKeycode:HKMapGetKeycodeAndModifierForUnichar(character, NULL)];
+  _checkNotRegistred(self);
+  [self setKeycode:[[HKKeyMap currentKeyMap] keycodeForCharacter:character modifiers:NULL]];
 }
 
 - (void)setKeycode:(HKKeycode)keycode character:(UniChar)character {
-  if ([self shouldChangeKeystroke]) {
-    [self willChangeValueForKey:WBProperty(keycode)];
-    hk_keycode = keycode;
-    [self didChangeValueForKey:WBProperty(keycode)];
-    [self willChangeValueForKey:WBProperty(character)];
-    hk_character = character;
-    [self didChangeValueForKey:WBProperty(character)];
-  }
+  _checkNotRegistred(self);
+  [self willChangeValueForKey:SPXProperty(keycode)];
+  _keycode = keycode;
+  [self didChangeValueForKey:SPXProperty(keycode)];
+  [self willChangeValueForKey:SPXProperty(character)];
+  _character = character;
+  [self didChangeValueForKey:SPXProperty(character)];
 }
 
-@synthesize target = hk_target;
-@synthesize action = hk_action;
-
-- (BOOL)isRegistred { return hk_hkFlags.registred; }
+- (BOOL)isRegistred { return _hkFlags.registred; }
 
 - (BOOL)setRegistred:(BOOL)flag {
-  // Si la clé n'est pas valide
   if (![self isValid])
-    return NO;
+    return NO; // invalid hotkey
 
   flag = flag ? 1 : 0;
-  // Si la clé est déja dans l'état demandé
-  if (flag == hk_hkFlags.registred)
-    return YES;
+  if (flag == _hkFlags.registred)
+    return YES; // hotkey already registred
 
   BOOL result = YES;
   if (flag) { // if register
     if ([[HKHotKeyManager sharedManager] registerHotKey:self])
-      hk_hkFlags.registred = 1; // Set registred flag
+      _hkFlags.registred = 1; // Set registred flag
     else
       result = NO;
   } else { // If unregister
     [self hk_invalidateTimer];
-    hk_hkFlags.registred = 0;
+    _hkFlags.registred = 0;
     result = [[HKHotKeyManager sharedManager] unregisterHotKey:self];
   }
   return result;
 }
 
-- (BOOL)invokeOnKeyUp { return hk_hkFlags.onrelease; }
-- (void)setInvokeOnKeyUp:(BOOL)flag { WBFlagSet(hk_hkFlags.onrelease, flag); }
-
-@synthesize repeatInterval = hk_repeatInterval;
-@synthesize initialRepeatInterval = hk_iRepeatInterval;
+- (BOOL)invokeOnKeyUp { return _hkFlags.onrelease; }
+- (void)setInvokeOnKeyUp:(BOOL)flag { SPXFlagSet(_hkFlags.onrelease, flag); }
 
 - (NSTimeInterval)initialRepeatInterval {
-  if (fiszero(hk_iRepeatInterval)) {
+  if (fiszero(_iRepeatInterval)) {
     return HKGetSystemInitialKeyRepeatInterval();
-  } else if (hk_iRepeatInterval < 0) {
-    return [self repeatInterval];
+  } else if (_iRepeatInterval < 0) {
+    return self.repeatInterval;
   }
-  return hk_iRepeatInterval;
+  return _iRepeatInterval;
 }
 
 #pragma mark Key Serialization
@@ -253,67 +247,66 @@ CFTimeInterval __HKEventTime(void) {
 
 #pragma mark -
 #pragma mark Invoke
-- (void)keyPressed {
-  hk_hkFlags.down = 1;
-  hk_eventTime = [[HKHotKeyManager sharedManager] currentEventTime];
+- (void)keyPressed:(NSTimeInterval)eventTime {
+  _hkFlags.down = 1;
+  _eventTime = eventTime;
   [self hk_invalidateTimer];
-  if (hk_hkFlags.onrelease) {
-    hk_hkFlags.invoked = 0;
-  } else if (!hk_hkFlags.onrelease) {
+  if (_hkFlags.onrelease) {
+    _hkFlags.invoked = 0;
+  } else if (!_hkFlags.onrelease) {
     /* Flags used to avoid double invocation if 'on release' change during invoke */
-    hk_hkFlags.invoked = 1;
+    _hkFlags.invoked = 1;
     [self invoke:NO];
     //  may no longer be down (if release key event append during invoke)
-    if (hk_hkFlags.down && [self repeatInterval] > 0) {
+    if (_hkFlags.down && [self repeatInterval] > 0) {
       NSTimeInterval value = [self initialRepeatInterval];
       if (value > 0) {
-        value -= (__HKEventTime() - hk_eventTime); // time elapsed in invoke
+        value -= (__HKEventTime() - _eventTime); // time elapsed in invoke
         NSDate *fire = [[NSDate alloc] initWithTimeIntervalSinceNow:value];
-        hk_repeatTimer = [[NSTimer alloc] initWithFireDate:fire
-                                                  interval:[self repeatInterval]
-                                                    target:self
-                                                  selector:@selector(hk_invoke:)
-                                                  userInfo:nil
-                                                   repeats:YES];
-        wb_release(fire);
-        [[NSRunLoop currentRunLoop] addTimer:hk_repeatTimer forMode:NSDefaultRunLoopMode];
+        _repeatTimer = [[NSTimer alloc] initWithFireDate:fire
+                                                interval:[self repeatInterval]
+                                                  target:self
+                                                selector:@selector(hk_invoke:)
+                                                userInfo:nil
+                                                 repeats:YES];
+        [fire release];
+        [[NSRunLoop currentRunLoop] addTimer:_repeatTimer forMode:NSRunLoopCommonModes];
       }
     }
   }
 }
 
-- (void)keyReleased {
-  hk_hkFlags.down = 0;
-  hk_eventTime = [[HKHotKeyManager sharedManager] currentEventTime];
+- (void)keyReleased:(NSTimeInterval)eventTime {
+  _hkFlags.down = 0;
+  _eventTime = eventTime;
   [self hk_invalidateTimer];
-  if (hk_hkFlags.onrelease && !hk_hkFlags.invoked) {
+  if (_hkFlags.onrelease && !_hkFlags.invoked) {
     [self invoke:NO];
   }
 }
 
 - (void)invoke:(BOOL)repeat {
-  if (!hk_hkFlags.lock) {
-    WBFlagSet(hk_hkFlags.repeat, repeat);
+  if (!_hkFlags.lock) {
+    SPXFlagSet(_hkFlags.repeat, repeat);
     [self willInvoke];
-    hk_hkFlags.lock = 1;
+    _hkFlags.lock = 1;
     @try {
-      if (hk_action && [hk_target respondsToSelector:hk_action]) {
-        [hk_target performSelector:hk_action withObject:self];
+      if (_action && [_target respondsToSelector:_action]) {
+        [_target performSelector:_action withObject:self];
       }
     } @catch (id exception) {
-      WBLogException(exception);
+      SPXLogException(exception);
     }
-    hk_hkFlags.lock = 0;
+    _hkFlags.lock = 0;
     [self didInvoke];
-    WBFlagSet(hk_hkFlags.repeat, NO);
+    SPXFlagSet(_hkFlags.repeat, NO);
   } else {
-    WBLogWarning(@"Recursive call in %@", self);
+    SPXLogWarning(@"Recursive call in %@", self);
     // Should we resend event ?
   }
 }
 
-@synthesize eventTime = hk_eventTime;
-- (BOOL)isARepeat { return hk_hkFlags.repeat; }
+- (BOOL)isARepeat { return _hkFlags.repeat; }
 
 - (void)willInvoke {}
 - (void)didInvoke {}
@@ -321,20 +314,20 @@ CFTimeInterval __HKEventTime(void) {
 #pragma mark -
 #pragma mark Private
 - (void)hk_invalidateTimer {
-  if (hk_repeatTimer) {
-    [hk_repeatTimer invalidate];
-    wb_release(hk_repeatTimer);
-    hk_repeatTimer = nil;
+  if (_repeatTimer) {
+    [_repeatTimer invalidate];
+    [_repeatTimer release];
+    _repeatTimer = nil;
   }
 }
 
 - (void)hk_invoke:(NSTimer *)timer {
   /* get uptime in seconds (this is what carbon and cocoa event use as timestamp) */
-  hk_eventTime = __HKEventTime();
+  _eventTime = __HKEventTime();
   if (HKTraceHotKeyEvents) {
     NSLog(@"Repeat event: %@", self);
   }
-  if (!hk_hkFlags.onrelease)
+  if (!_hkFlags.onrelease)
     [self invoke:YES];
 }
 
@@ -358,18 +351,20 @@ void HKHotKeyUnpackKeystoke(uint64_t rawkey, HKKeycode *outKeycode, HKModifier *
     if (character >= '0' && character <= '9')
       isSpecialKey = YES;
   }
-  /* we should use keycode if this is a special keycode (fonction, numpad, ...). */
-  /* else we try to resolve keycode using modifier */
-  /* if conversion fail, we use keycode, and we update character */
+
+  /* we should use keycode if this is a special keycode (fonction, numpad, ...).
+   else we try to resolve keycode using modifier
+   if conversion fail, we use keycode, and we update character */
+  HKKeyMap *keymap = [HKKeyMap currentKeyMap];
   if (!isSpecialKey || (kHKInvalidVirtualKeyCode == keycode)) {
     /* update keycode to reflect character */
-    HKKeycode newCode = HKMapGetKeycodeAndModifierForUnichar(character, NULL);
+    HKKeycode newCode = [keymap keycodeForCharacter:character modifiers:NULL];
     if (kHKInvalidVirtualKeyCode != newCode)
       keycode = newCode;
     else
-      character = HKMapGetUnicharForKeycode(keycode);
+      character = [keymap characterForKeycode:keycode];
   } else {
-    character = HKMapGetUnicharForKeycode(keycode);
+    character = [keymap characterForKeycode:keycode];
   }
   if (outChr) *outChr = character;
   if (outKeycode) *outKeycode = keycode;
@@ -380,25 +375,17 @@ void HKHotKeyUnpackKeystoke(uint64_t rawkey, HKKeycode *outKeycode, HKModifier *
 static
 io_connect_t _HKHIDGetSystemService(void) {
   static mach_port_t sSystemService = 0;
-  if (sSystemService)
-    return sSystemService;
-  @synchronized([HKHotKey class]) {
-    if (!sSystemService) {
-      kern_return_t kr;
-      mach_port_t service, iter;
-
-      kr = IOServiceGetMatchingServices(kIOMasterPortDefault,
-                                        IOServiceMatching(kIOHIDSystemClass), &iter);
-      check(KERN_SUCCESS == kr);
-
-      service = IOIteratorNext(iter);
-      check(service);
-
-      kr = IOServiceOpen(service, mach_task_self(),
-                         kIOHIDParamConnectType, &sSystemService);
-      check(KERN_SUCCESS == kr);
-
-      IOObjectRelease(service);
+  
+  if (!sSystemService) {
+    mach_port_t iter;
+    kern_return_t kr = IOServiceGetMatchingServices(kIOMasterPortDefault, IOServiceMatching(kIOHIDSystemClass), &iter);
+    if (KERN_SUCCESS == kr) {
+      mach_port_t service = IOIteratorNext(iter);
+      if (service) {
+        kr = IOServiceOpen(service, mach_task_self(), kIOHIDParamConnectType, &sSystemService);
+        check(KERN_SUCCESS == kr);
+        IOObjectRelease(service);
+      }
       IOObjectRelease(iter);
     }
   }
@@ -416,7 +403,7 @@ NSTimeInterval HKGetSystemKeyRepeatInterval(void) {
                                          (IOByteCount)sizeof(value), &value, &size);
     /* convert nano into seconds */
     if (KERN_SUCCESS == kr && size == sizeof(value))
-      interval = value / 1e9;
+      interval = (double)value / 1e9;
   }
   return interval;
 }
@@ -431,7 +418,7 @@ NSTimeInterval HKGetSystemInitialKeyRepeatInterval(void) {
                                          (IOByteCount)sizeof(value), &value, &size);
     /* convert nano into seconds */
     if (KERN_SUCCESS == kr && size == sizeof(value))
-      interval = value / 1e9;
+      interval = (double)value / 1e9;
   }
   return interval;
 }

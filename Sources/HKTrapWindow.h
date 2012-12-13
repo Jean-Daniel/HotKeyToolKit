@@ -3,18 +3,14 @@
  *  HotKeyToolKit
  *
  *  Created by Jean-Daniel Dupas.
- *  Copyright © 2004 - 2011 Shadow Lab. All rights reserved.
- */
-/*!
- @header HKTrapWindow
+ *  Copyright © 2004 - 2012 Shadow Lab. All rights reserved.
  */
 
 #import <HotKeyToolKit/HKBase.h>
 
 // MARK: Constants Declaration
 /*!
- @const 		kHKTrapWindowKeyCaughtNotification
- @abstract   Notification sended when a NSEvent is catch.
+ @abstract   Notification send when a NSEvent is caught.
  @discussion Notification userInfo contains a NSDictionary with 3 keys:<br />
  - kHKEventKeyCodeKey: A NSNumber<br />
  - kHKEventModifierKey: A NSNumber<br />
@@ -50,9 +46,9 @@ HK_OBJC_EXPORT
     unsigned int trap:1;
     unsigned int resend:1;
     unsigned int skipverify:1;
-    unsigned int :5;
-  } hk_twFlags;
-  NSTextField *hk_trapField;
+    unsigned int :29;
+  } _twFlags;
+  NSTextField *_trapField;
 }
 
 - (BOOL)isTrapping;
@@ -77,7 +73,7 @@ HK_OBJC_EXPORT
  @abstract	Delegate Methods for HKTrapWindow
  */
 @protocol HKTrapWindowDelegate <NSWindowDelegate>
-
+@optional
 /*!
  @method     trapWindow:needPerformKeyEquivalent:
  @abstract   This method permit to block some key equivalent and to handle others (like ESC key equivalent).

@@ -3,7 +3,7 @@
  *  HotKeyToolKit
  *
  *  Created by Jean-Daniel Dupas.
- *  Copyright © 2004 - 2011 Shadow Lab. All rights reserved.
+ *  Copyright © 2004 - 2012 Shadow Lab. All rights reserved.
  */
 /*!
  @header HKKeyMap
@@ -225,65 +225,62 @@ enum {
 #pragma mark -
 #pragma mark Public Functions Declaration
 
+// Forward declaration so client don't have to pull the carbon headers.
+typedef struct __TISInputSource* TISInputSourceRef;
+
+typedef struct __HKKeyMapContext *HKKeyMapContextRef;
+
+HK_OBJC_EXPORT
+@interface HKKeyMap : NSObject {
+@private
+  bool _autoupdate;
+  HKKeyMapContextRef _ctxt;
+  TISInputSourceRef _layout;
+}
+
+// As the Keyboard Viewer and the Character palette are
+// TISInputSource, we add convenient method to show them here.
++ (void)showKeyboardViewer;
++ (void)showCharacterPalette;
+
++ (BOOL)isFunctionKey:(HKKeycode)keycode;
++ (BOOL)isFunctionKeyCharacter:(UniChar)character;
+
++ (NSString *)stringRepresentationForCharacter:(UniChar)character modifiers:(HKModifier)modifiers;
++ (NSString *)speakableStringRepresentationForCharacter:(UniChar)character modifiers:(HKModifier)modifiers;
+
+@property(nonatomic, readonly) NSString *identifier;
+@property(nonatomic, readonly) NSString *localizedName;
+
++ (HKKeyMap *)currentKeyMap;
+
 /*!
- @function
+ @result Returns a keymap instance representing the current user keymap layout.
+ */
+- (instancetype)init;
+
+/*!
  @abstract   Advanced reverse mapping function.
- @param      character
  @param      modifier On return, first keystroke modifier. Pass <code>NULL</code> if you do not want it.
  @result     Returns virtual keycode of the keystroke needed to generate <code>character</code>,
  or kHKInvalidVirtualKeyCode if need more than one keystroke to generate the character, except if character is a deadkey output (eg: ^, ¨, …).
  */
-HK_EXPORT
-HKKeycode HKMapGetKeycodeAndModifierForUnichar(UniChar character, HKModifier *modifier);
+- (HKKeycode)keycodeForCharacter:(UniChar)character modifiers:(HKModifier *)modifiers;
 
-/*!
- @function
- @abstract   Advanced reverse mapping function.
- @param      character
- @param      keys On return, an array of virtual keycode.
- @param      modifiers  On return, an array of modifiers.
- @param      maxcount Size of keys and modifiers array.
- @result     Returns Count of keystroke needed to generate character. Can be more than maxcount.
+/**
+ @result Returns the count of keycodes/modifiers needed to output the requested characters
+ or 0 if this character is not available with this keymap.
  */
-HK_EXPORT
-NSUInteger HKMapGetKeycodesAndModifiersForUnichar(UniChar character, HKKeycode *keys, HKModifier *modifiers, NSUInteger maxcount);
+- (NSUInteger)getKeycodes:(HKKeycode *)keycodes modifiers:(HKModifier *)modifiers
+                maxLength:(NSUInteger)length forCharacter:(UniChar)character;
 
-/*!
- @function
- @abstract   Mapping function.
- @discussion If the unichar is not a simple printable char, return one of the Unicode Constant.
- @param      keycode A virtual keycode.
- @result     an Unichar corresponding to keycode passed.
+/**
+ @result Returns kHKNilUnichar if no character was found.
  */
-HK_EXPORT
-UniChar HKMapGetUnicharForKeycode(HKKeycode keycode);
+- (UniChar)characterForKeycode:(HKKeycode)keycode;
+- (UniChar)characterForKeycode:(HKKeycode)keycode modifiers:(HKModifier)modifier;
 
-HK_EXPORT
-UniChar HKMapGetUnicharForKeycodeAndModifier(HKKeycode keycode, HKModifier aModifier);
-
-/*!
- @function
- @abstract   Returns the name of the current keyMap.
- */
-HK_EXPORT
-NSString *HKMapGetCurrentMapName(void);
-
-/*!
- @function
- @abstract   Returns a String representation of the Shortcut, or nil if character is 0.
- @param      character
- @param      modifier If <i>modifier</i> is nil, return a representation of the key Unichar.
- */
-HK_EXPORT
-NSString *HKMapGetStringRepresentationForCharacterAndModifier(UniChar character, HKModifier modifier);
-
-HK_EXPORT
-NSString *HKMapGetSpeakableStringRepresentationForCharacterAndModifier(UniChar character, HKModifier modifier);
-
-HK_EXPORT
-bool HKMapIsFunctionKey(HKKeycode code);
-HK_EXPORT
-bool HKMapIsFunctionKeyForCharacter(UniChar chr);
+@end
 
 enum {
   kHKModifierFormatNative, /* kCGEventFlagsMask */
@@ -299,4 +296,4 @@ typedef NSInteger HKModifierFormat;
  @result     Return a carbon modifier.
  */
 HK_EXPORT
-NSUInteger HKUtilsConvertModifier(NSUInteger modifier, HKModifierFormat input, HKModifierFormat output);
+NSUInteger HKModifierConvert(NSUInteger modifier, HKModifierFormat input, HKModifierFormat output);

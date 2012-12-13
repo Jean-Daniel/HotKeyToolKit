@@ -3,7 +3,7 @@
  *  HotKeyToolKit
  *
  *  Created by Jean-Daniel Dupas.
- *  Copyright © 2004 - 2011 Shadow Lab. All rights reserved.
+ *  Copyright © 2004 - 2012 Shadow Lab. All rights reserved.
  */
 /*!
 @header HKHotKey
@@ -19,18 +19,18 @@
 HK_OBJC_EXPORT
 @interface HKHotKey : NSObject <NSCopying, NSCoding> {
 @private
-  SEL hk_action;
-  wb_weak id hk_target;
-  NSTimer *hk_repeatTimer;
-  NSTimeInterval hk_repeatInterval;
-  NSTimeInterval hk_iRepeatInterval;
+  SEL _action;
+  __weak id _target;
+  NSTimer *_repeatTimer;
+  NSTimeInterval _repeatInterval;
+  NSTimeInterval _iRepeatInterval;
 
-  HKModifier hk_mask;
-  HKKeycode hk_keycode;
-  UniChar hk_character;
+  HKModifier _mask;
+  HKKeycode _keycode;
+  UniChar _character;
 
   /* event */
-  NSTimeInterval hk_eventTime;
+  NSTimeInterval _eventTime;
 
   struct _hk_hkFlags {
     unsigned int down:1;
@@ -40,7 +40,7 @@ HK_OBJC_EXPORT
     unsigned int onrelease:1;
     unsigned int registred:1;
     unsigned int reserved:26;
-  } hk_hkFlags;
+  } _hkFlags;
 }
 
 #pragma mark -
@@ -50,7 +50,7 @@ HK_OBJC_EXPORT
  @abstract Creates and returns an new Hot Key.
  @result A new HotKey.
  */
-+ (id)hotkey;
++ (instancetype)hotkey;
 /*!
   @method
  @abstract Creates and returns an new Hot Key with keycode set to <i>code</i> and modifier set to <i>modifier</i>.
@@ -58,7 +58,7 @@ HK_OBJC_EXPORT
  @param modifier
  @result Returns a new HotKey with keystrock set to <i>keycode</i> and <i>modifier</i>.
  */
-+ (id)hotkeyWithKeycode:(HKKeycode)code modifier:(NSUInteger)modifier;
++ (instancetype)hotkeyWithKeycode:(HKKeycode)code modifier:(NSUInteger)modifier;
 /*!
   @method
  @abstract Creates and returns an new Hot Key with character set to <i>character</i> and modifier set to <i>modifier</i>.
@@ -66,7 +66,7 @@ HK_OBJC_EXPORT
  @param modifier
  @result Returns a new HotKey with keystrock set to <i>character</i> and <i>modifier</i>.
  */
-+ (id)hotkeyWithUnichar:(UniChar)character modifier:(NSUInteger)modifier;
++ (instancetype)hotkeyWithUnichar:(UniChar)character modifier:(NSUInteger)modifier;
 
 #pragma mark -
 #pragma mark Initializers
@@ -75,7 +75,7 @@ HK_OBJC_EXPORT
  @abstract   Designated Initializer
  @result     A new HotKey.
  */
-- (id)init;
+- (instancetype)init;
 
 /*!
   @method
@@ -84,7 +84,7 @@ HK_OBJC_EXPORT
  @param      modifier The modifier mask for the receiver.
  @result     Returns a HotKey with keystrock set to <i>keycode</i> and <i>modifier</i>.
  */
-- (id)initWithKeycode:(HKKeycode)code modifier:(NSUInteger)modifier;
+- (instancetype)initWithKeycode:(HKKeycode)code modifier:(NSUInteger)modifier;
 /*!
   @method
  @abstract   Initializes a newly allocated hotkey.
@@ -92,7 +92,7 @@ HK_OBJC_EXPORT
  @param      modifier (description)
  @result     Returns a HotKey with keystrock set to <i>character</i> and <i>modifier</i>.
  */
-- (id)initWithUnichar:(UniChar)character modifier:(NSUInteger)modifier;
+- (instancetype)initWithUnichar:(UniChar)character modifier:(NSUInteger)modifier;
 
 #pragma mark -
 #pragma mark Misc Properties
@@ -187,8 +187,8 @@ HK_OBJC_EXPORT
 - (void)invoke:(BOOL)repeat;
 
 #pragma mark Callback Methods
-- (void)keyPressed;
-- (void)keyReleased;
+- (void)keyPressed:(NSTimeInterval)eventTime;
+- (void)keyReleased:(NSTimeInterval)eventTime;
 
 - (void)willInvoke;
 - (void)didInvoke;

@@ -3,7 +3,7 @@
  *  HotKeyToolKit
  *
  *  Created by Jean-Daniel Dupas.
- *  Copyright © 2004 - 2011 Shadow Lab. All rights reserved.
+ *  Copyright © 2004 - 2012 Shadow Lab. All rights reserved.
  */
 /*!
     @header		HKKeymapInternal
@@ -12,17 +12,16 @@
 
 #import <HotKeyToolKit/HKBase.h>
 
-typedef struct HKKeyMapContext HKKeyMapContext;
-typedef UniChar (*HKBaseCharacterForKeyCodeFunction)(void *ctxt, HKKeycode keycode);
+typedef struct __HKKeyMapContext HKKeyMapContext;
+
 typedef UniChar (*HKCharacterForKeyCodeFunction)(void *ctxt, HKKeycode keycode, HKModifier modifier);
 typedef NSUInteger (*HKKeycodesForCharacterFunction)(void *ctxt, UniChar character, HKKeycode *keys, HKModifier *modifiers, NSUInteger maxsize);
 typedef void (*HKContextDealloc)(HKKeyMapContext *ctxt);
 
-struct HKKeyMapContext {
+struct __HKKeyMapContext {
   void *data;
   HKContextDealloc dealloc;
-  HKBaseCharacterForKeyCodeFunction baseMap;
-  HKCharacterForKeyCodeFunction fullMap;
+  HKCharacterForKeyCodeFunction map;
   HKKeycodesForCharacterFunction reverseMap;
 };
 

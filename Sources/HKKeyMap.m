@@ -3,38 +3,22 @@
  *  HotKeyToolKit
  *
  *  Created by Jean-Daniel Dupas.
- *  Copyright © 2004 - 2011 Shadow Lab. All rights reserved.
+ *  Copyright © 2004 - 2012 Shadow Lab. All rights reserved.
  */
 
-#import "HKKeyMap.h"
-#import "KeyMap.h"
+#import <HotKeyToolKit/HKKeyMap.h>
 
+#import "HKFramework.h"
+#import "HKKeymapInternal.h"
+
+#import <Carbon/Carbon.h>
+
+#pragma mark Statics Functions Declaration
 HK_INLINE
 NSString *SpecialChar(UniChar ch) {
   return [NSString stringWithCharacters:&ch length:1];
 }
 
-#define kHotKeyToolKitBundleIdentifier @"org.shadowlab.HotKeyToolKit"
-#define kHotKeyToolKitBundle           [NSBundle bundleWithIdentifier:kHotKeyToolKitBundleIdentifier]
-
-const UniChar kHKNilUnichar = 0xffff;
-
-static
-HKKeyMapRef SharedKeyMap(void) {
-  static HKKeyMapRef sharedKeyMap = nil;
-  if (!sharedKeyMap) {
-    sharedKeyMap = HKKeyMapCreateWithCurrentLayout(YES);
-    if (!sharedKeyMap) {
-      DLog(@"Error while initializing Keyboard Map");
-    } else {
-      DLog(@"Keyboard Map initialized");
-    }
-  }
-  return sharedKeyMap;
-}
-
-#pragma mark -
-#pragma mark Statics Functions Declaration
 static
 HKKeycode HKMapGetSpecialKeyCodeForCharacter(UniChar charCode);
 static
@@ -47,28 +31,93 @@ NSString *HKMapGetSpeakableModifierString(HKModifier mask);
 static
 NSString *HKMapGetStringForUnichar(UniChar unicode);
 
-#pragma mark -
-#pragma mark Publics Functions Definition
-UniChar HKMapGetUnicharForKeycode(HKKeycode keycode) {
-  return HKMapGetUnicharForKeycodeAndModifier(keycode, 0);
-}
-UniChar HKMapGetUnicharForKeycodeAndModifier(HKKeycode keycode, HKModifier aModifier) {
-  UniChar unicode = !aModifier ? HKMapGetSpecialCharacterForKeycode(keycode) : kHKNilUnichar;
-  if (kHKNilUnichar == unicode)
-    unicode = aModifier ? HKKeyMapGetUnicharForKeycodeAndModifier(SharedKeyMap(), keycode, aModifier) :
-    HKKeyMapGetUnicharForKeycode(SharedKeyMap(), keycode);
-  return unicode;
+// MARK: -
+// MARK: HKKeyMap implementation
+
+const UniChar kHKNilUnichar = 0xffff;
+
+@interface HKKeyMap ()
+- (void)hk_update;
+- (void)hk_loadLayout;
+@end
+
+@implementation HKKeyMap
+
+HK_INLINE
+void _HKKeyMapUpdate(HKKeyMap *self, bool load) {
+  if (self->_autoupdate)
+    [self hk_update];
+  if (!self->_ctxt && load)
+    [self hk_loadLayout];
 }
 
-NSString *HKMapGetCurrentMapName(void) {
-  return WBCFToNSString(HKKeyMapGetName(SharedKeyMap()));
++ (HKKeyMap *)currentKeyMap {
+  static HKKeyMap *currentKeyMap = nil;
+  if (!currentKeyMap) {
+    currentKeyMap = [[HKKeyMap alloc] init];
+    if (!currentKeyMap) {
+      SPXDebug(@"Error while initializing Keyboard Map");
+    } else {
+      SPXDebug(@"Keyboard Map initialized");
+    }
+  }
+  return currentKeyMap;
 }
 
-NSString *HKMapGetStringRepresentationForCharacterAndModifier(UniChar character, HKModifier modifier) {
+static
+void _ShowTISPalette(CFStringRef name, NSString *identifier) {
+  NSDictionary *properties = [NSDictionary dictionaryWithObjectsAndKeys:
+                              SPXCFToNSString(name), kTISPropertyInputSourceType,
+                              kTISCategoryPaletteInputSource, kTISPropertyInputSourceCategory,
+                              identifier, kTISPropertyInputSourceID, nil]; //identifier may be nil
+  TISInputSourceRef src = NULL;
+  // See TISCreateInputSourceList for explanation about the double call pattern.
+  CFArrayRef list = TISCreateInputSourceList(SPXNSToCFDictionary(properties), false);
+  if (list) {
+    if (CFArrayGetCount(list) > 0)
+      src = (TISInputSourceRef)CFRetain(CFArrayGetValueAtIndex(list, 0));
+    CFRelease(list);
+  }
+  if (!src) {
+    list = TISCreateInputSourceList(SPXNSToCFDictionary(properties), true);
+    if (list) {
+      if (CFArrayGetCount(list) > 0)
+        src = (TISInputSourceRef)CFRetain(CFArrayGetValueAtIndex(list, 0));
+      CFRelease(list);
+    }
+  }
+  if (src) {
+    TISSelectInputSource(src);
+    CFRelease(src);
+  }
+}
+
++ (void)showKeyboardViewer {
+  _ShowTISPalette(kTISTypeKeyboardViewer, nil);
+}
+
++ (void)showCharacterPalette {
+  // Passing only kTISTypeCharacterPalette returns a list with 2 input source, so we have
+  // to be more specific.
+  _ShowTISPalette(kTISTypeCharacterPalette, @"com.apple.CharacterPaletteIM");
+}
+
++ (BOOL)isFunctionKey:(HKKeycode)keycode {
+  UniChar chr = HKMapGetSpecialCharacterForKeycode(keycode);
+  if (kHKNilUnichar != chr)
+    return [self isFunctionKeyCharacter:chr];
+  return NO;
+}
+
++ (BOOL)isFunctionKeyCharacter:(UniChar)character {
+  return 0xF700 <= character && character <= 0xF8FF;
+}
+
++ (NSString *)stringRepresentationForCharacter:(UniChar)character modifiers:(HKModifier)modifiers {
   if (character && character != kHKNilUnichar) {
     NSString *str = nil;
-    NSString *mod = HKMapGetModifierString(modifier);
-    if (modifier & kCGEventFlagMaskNumericPad) {
+    NSString *mod = HKMapGetModifierString(modifiers);
+    if (modifiers & kCGEventFlagMaskNumericPad) {
       if (character >= '0' && character <= '9') {
         UniChar chrs[2] = { character, '*' };
         str = [NSString stringWithCharacters:chrs length:2];
@@ -83,9 +132,9 @@ NSString *HKMapGetStringRepresentationForCharacterAndModifier(UniChar character,
   return nil;
 }
 
-NSString *HKMapGetSpeakableStringRepresentationForCharacterAndModifier(UniChar character, HKModifier modifier) {
++ (NSString *)speakableStringRepresentationForCharacter:(UniChar)character modifiers:(HKModifier)modifiers {
   if (character && character != kHKNilUnichar) {
-    NSString *mod = HKMapGetSpeakableModifierString(modifier);
+    NSString *mod = HKMapGetSpeakableModifierString(modifiers);
     if ([mod length] > 0) {
       return [NSString stringWithFormat:@"%@ + %@", mod, HKMapGetStringForUnichar(character)];
     } else {
@@ -95,13 +144,49 @@ NSString *HKMapGetSpeakableStringRepresentationForCharacterAndModifier(UniChar c
   return nil;
 }
 
-#pragma mark Reverse Mapping
-HKKeycode HKMapGetKeycodeAndModifierForUnichar(UniChar character, HKModifier *modifier) {
+- (instancetype)init {
+  if (self = [super init]) {
+    _autoupdate = true;
+  }
+  return self;
+}
+
+HK_INLINE
+void _HKKeyMapResetContext(HKKeyMap *self) {
+  if (self->_ctxt) {
+    if (self->_ctxt->dealloc)
+      self->_ctxt->dealloc(self->_ctxt);
+    free(self->_ctxt);
+    self->_ctxt = NULL;
+  }
+}
+
+- (void)dealloc {
+  _HKKeyMapResetContext(self);
+  if (_layout)
+    CFRelease(_layout);
+  [super dealloc];
+}
+
+- (NSString *)identifier {
+  _HKKeyMapUpdate(self, false);
+  return SPXCFToNSString(TISGetInputSourceProperty(_layout, kTISPropertyInputSourceID));
+}
+
+- (NSString *)localizedName {
+  _HKKeyMapUpdate(self, false);
+  return SPXCFToNSString(TISGetInputSourceProperty(_layout, kTISPropertyInputSourceLanguages));
+}
+
+- (HKKeycode)keycodeForCharacter:(UniChar)character modifiers:(HKModifier *)modifiers {
   if (kHKNilUnichar == character)
     return kHKInvalidVirtualKeyCode;
   HKKeycode key[4];
   HKModifier mod[4];
-  NSUInteger cnt = HKMapGetKeycodesAndModifiersForUnichar(character, key, mod, 4);
+  NSUInteger cnt = 0;
+  _HKKeyMapUpdate(self, true);
+  if (_ctxt && _ctxt->reverseMap)
+    cnt = _ctxt->reverseMap(_ctxt->data, character, key, mod, 4);
   /* if not found, or need more than 2 keystroke */
   if (!cnt || cnt > 2 || kHKInvalidVirtualKeyCode == key[0])
     return kHKInvalidVirtualKeyCode;
@@ -110,17 +195,20 @@ HKKeycode HKMapGetKeycodeAndModifierForUnichar(UniChar character, HKModifier *mo
   if (cnt == 2 && key[1] != kHKVirtualSpaceKey)
     return kHKInvalidVirtualKeyCode;
 
-  if (modifier) *modifier = mod[0];
+  if (modifiers) *modifiers = mod[0];
 
   return key[0];
 }
 
-NSUInteger HKMapGetKeycodesAndModifiersForUnichar(UniChar character, HKKeycode *keys, HKModifier *modifiers, NSUInteger maxcount) {
+- (NSUInteger)getKeycodes:(HKKeycode *)keys modifiers:(HKModifier *)modifiers
+                maxLength:(NSUInteger)maxcount forCharacter:(UniChar)character {
   NSUInteger count = 0;
   if (character != kHKNilUnichar) {
     HKKeycode keycode = HKMapGetSpecialKeyCodeForCharacter(character);
     if (keycode == kHKInvalidVirtualKeyCode) {
-      count = HKKeyMapGetKeycodesForUnichar(SharedKeyMap(), character, keys, modifiers, maxcount);
+      _HKKeyMapUpdate(self, true);
+      if (_ctxt && _ctxt->reverseMap)
+        count = _ctxt->reverseMap(_ctxt->data, character, keys, modifiers, maxcount);
     } else {
       count = 1;
       if (maxcount > 0) {
@@ -132,140 +220,175 @@ NSUInteger HKMapGetKeycodesAndModifiersForUnichar(UniChar character, HKKeycode *
   return count;
 }
 
-#pragma mark Functions Keys
-bool HKMapIsFunctionKey(HKKeycode code) {
-  UniChar chr = HKMapGetSpecialCharacterForKeycode(code);
-  if (kHKNilUnichar != chr)
-    return HKMapIsFunctionKeyForCharacter(chr);
-  return false;
+- (UniChar)characterForKeycode:(HKKeycode)keycode {
+  return [self characterForKeycode:keycode modifiers:0];
 }
 
-bool HKMapIsFunctionKeyForCharacter(UniChar chr) {
-  return 0xF700 <= chr && chr <= 0xF8FF;
+- (UniChar)characterForKeycode:(HKKeycode)keycode modifiers:(HKModifier)modifiers {
+  UniChar unicode = !modifiers ? HKMapGetSpecialCharacterForKeycode(keycode) : kHKNilUnichar;
+  if (kHKNilUnichar == unicode) {
+    _HKKeyMapUpdate(self, true);
+    if (_ctxt && _ctxt->map)
+      unicode = _ctxt->map(_ctxt->data, keycode, modifiers);
+  }
+  return unicode;
 }
+
+- (void)hk_update {
+  CFBooleanRef selected = TISGetInputSourceProperty(_layout, kTISPropertyInputSourceIsSelected);
+  if (!selected || !CFBooleanGetValue(selected)) {
+    // FIXME: we should probably use ASCII capable input source or override input source.
+    TISInputSourceRef current = TISCopyCurrentKeyboardLayoutInputSource();
+    if (current != _layout) { // FIXME: compare _identifier instead
+      _HKKeyMapResetContext(self);
+      if (_layout)
+        CFRelease(_layout);
+      _layout = current;
+    }
+  }
+}
+
+- (void)hk_loadLayout {
+  OSStatus err = noErr;
+  _ctxt = calloc(1, sizeof(*_ctxt));
+  CFDataRef uchr = TISGetInputSourceProperty(_layout, kTISPropertyUnicodeKeyLayoutData);
+  if (uchr) {
+    err = HKKeyMapContextWithUchrData((const UCKeyboardLayout *)CFDataGetBytePtr(uchr), true, _ctxt);
+  } else {
+#if !__LP64__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated"
+    /* maybe this is kchr data only ... */
+    KeyboardLayoutRef ref;
+    // FIXME: should find a better way to get matching KCHR.
+    err = KLGetCurrentKeyboardLayout(&ref);
+    // err = KLGetKeyboardLayoutWithName(???, &ref);
+    if (noErr == err) {
+      const void *data = NULL;
+      err = KLGetKeyboardLayoutProperty(ref, kKLKCHRData, (void *)&data);
+      if (noErr == err)
+        err = HKKeyMapContextWithKCHRData(data, true, _ctxt);
+    }
+    if (noErr != err) {
+      spx_log_error("Error while trying to get layout data: %s", GetMacOSStatusErrorString(err));
+    }
+#pragma clang diagnostic push
+#else
+    spx_log_warning("No UCHR data found and 64 bits does not support KCHR.");
+    err = paramErr;
+#endif
+  }
+  if (noErr != err)
+    memset(_ctxt, 0, sizeof(*_ctxt));
+}
+
+@end
 
 #pragma mark -
 #pragma mark Statics Functions Definition
 HKKeycode HKMapGetSpecialKeyCodeForCharacter(UniChar character) {
-  HKKeycode keyCode = kHKInvalidVirtualKeyCode;
   switch (character) {
       /* functions keys */
     case kHKF1Unicode:
-      keyCode = kHKVirtualF1Key;
-      break;
+      return kHKVirtualF1Key;
     case kHKF2Unicode:
-      keyCode = kHKVirtualF2Key;
-      break;
+      return kHKVirtualF2Key;
     case kHKF3Unicode:
-      keyCode = kHKVirtualF3Key;
-      break;
+      return kHKVirtualF3Key;
     case kHKF4Unicode:
-      keyCode = kHKVirtualF4Key;
-      break;
+      return kHKVirtualF4Key;
       /* functions keys */
     case kHKF5Unicode:
-      keyCode = kHKVirtualF5Key;
-      break;
+      return kHKVirtualF5Key;
     case kHKF6Unicode:
-      keyCode = kHKVirtualF6Key;
-      break;
+      return kHKVirtualF6Key;
     case kHKF7Unicode:
-      keyCode = kHKVirtualF7Key;
-      break;
+      return kHKVirtualF7Key;
     case kHKF8Unicode:
-      keyCode = kHKVirtualF8Key;
-      break;
+      return kHKVirtualF8Key;
       /* functions keys */
     case kHKF9Unicode:
-      keyCode = kHKVirtualF9Key;
-      break;
+      return kHKVirtualF9Key;
     case kHKF10Unicode:
-      keyCode = kHKVirtualF10Key;
-      break;
+      return kHKVirtualF10Key;
     case kHKF11Unicode:
-      keyCode = kHKVirtualF11Key;
-      break;
+      return kHKVirtualF11Key;
     case kHKF12Unicode:
-      keyCode = kHKVirtualF12Key;
-      break;
+      return kHKVirtualF12Key;
       /* functions keys */
     case kHKF13Unicode:
-      keyCode = kHKVirtualF13Key;
-      break;
+      return kHKVirtualF13Key;
     case kHKF14Unicode:
-      keyCode = kHKVirtualF14Key;
-      break;
+      return kHKVirtualF14Key;
     case kHKF15Unicode:
-      keyCode = kHKVirtualF15Key;
-      break;
+      return kHKVirtualF15Key;
     case kHKF16Unicode:
-      keyCode = kHKVirtualF16Key;
-      break;
+      return kHKVirtualF16Key;
       /* aluminium keyboard */
     case kHKF17Unicode:
-      keyCode = kHKVirtualF17Key;
-      break;
+      return kHKVirtualF17Key;
     case kHKF18Unicode:
-      keyCode = kHKVirtualF18Key;
-      break;
+      return kHKVirtualF18Key;
     case kHKF19Unicode:
-      keyCode = kHKVirtualF19Key;
-      break;
+      return kHKVirtualF19Key;
+//    case kHKF20Unicode: return ;
+//    case kHKF21Unicode: return ;
+//    case kHKF22Unicode: return ;
+//    case kHKF23Unicode: return ;
+//    case kHKF24Unicode: return ;
+//    case kHKF25Unicode: return ;
+//    case kHKF26Unicode: return ;
+//    case kHKF27Unicode: return ;
+//    case kHKF28Unicode: return ;
+//    case kHKF29Unicode: return ;
+//    case kHKF30Unicode: return ;
+//    case kHKF31Unicode: return ;
+//    case kHKF32Unicode: return ;
+//    case kHKF33Unicode: return ;
+//    case kHKF34Unicode: return ;
+//    case kHKF35Unicode: return ;
       /* editing utility keys */
     case kHKHelpUnicode:
-      keyCode = kHKVirtualHelpKey;
-      break;
+      return kHKVirtualHelpKey;
+//    case kHKInsertUnicode:
+//      return ;
     case kHKDeleteUnicode:
-      keyCode = kHKVirtualDeleteKey;
-      break;
+      return kHKVirtualDeleteKey;
     case kHKTabUnicode:
-      keyCode = kHKVirtualTabKey;
-      break;
+      return kHKVirtualTabKey;
     case kHKEnterUnicode:
-      keyCode = kHKVirtualEnterKey;
-      break;
+      return kHKVirtualEnterKey;
     case kHKReturnUnicode:
-      keyCode = kHKVirtualReturnKey;
-      break;
+      return kHKVirtualReturnKey;
     case kHKEscapeUnicode:
-      keyCode = kHKVirtualEscapeKey;
-      break;
+      return kHKVirtualEscapeKey;
     case kHKForwardDeleteUnicode:
-      keyCode = kHKVirtualForwardDeleteKey;
-      break;
+      return kHKVirtualForwardDeleteKey;
       /* navigation keys */
     case kHKHomeUnicode:
-      keyCode = kHKVirtualHomeKey;
-      break;
+      return kHKVirtualHomeKey;
+//    case kHKBeginUnicode:
+//      return ;
     case kHKEndUnicode:
-      keyCode = kHKVirtualEndKey;
-      break;
+      return kHKVirtualEndKey;
     case kHKPageUpUnicode:
-      keyCode = kHKVirtualPageUpKey;
-      break;
+      return kHKVirtualPageUpKey;
     case kHKPageDownUnicode:
-      keyCode = kHKVirtualPageDownKey;
-      break;
+      return kHKVirtualPageDownKey;
     case kHKLeftArrowUnicode:
-      keyCode = kHKVirtualLeftArrowKey;
-      break;
+      return kHKVirtualLeftArrowKey;
     case kHKRightArrowUnicode:
-      keyCode = kHKVirtualRightArrowKey;
-      break;
+      return kHKVirtualRightArrowKey;
     case kHKUpArrowUnicode:
-      keyCode = kHKVirtualUpArrowKey;
-      break;
+      return kHKVirtualUpArrowKey;
     case kHKDownArrowUnicode:
-      keyCode = kHKVirtualDownArrowKey;
-      break;
+      return kHKVirtualDownArrowKey;
     case kHKClearLineUnicode:
-      keyCode = kHKVirtualClearLineKey;
-      break;
+      return kHKVirtualClearLineKey;
     case kHKNoBreakSpaceUnicode:
-      keyCode = kHKVirtualSpaceKey;
-      break;
+      return kHKVirtualSpaceKey;
   }
-  return keyCode;
+  return kHKInvalidVirtualKeyCode;
 }
 
 UniChar HKMapGetSpecialCharacterForKeycode(HKKeycode keycode) {
@@ -344,104 +467,106 @@ NSString* HKMapGetModifierString(HKModifier mask) {
 
 NSString* HKMapGetSpeakableModifierString(HKModifier mask) {
   NSMutableString *str = mask ? [[NSMutableString alloc] init] : nil;
+  NSBundle *bundle = [HotKeyToolKitFramework bundle];
   if (kCGEventFlagMaskAlphaShift & mask) {
-    [str appendString:NSLocalizedStringFromTableInBundle(@"Caps Lock", @"Keyboard", kHotKeyToolKitBundle, @"Speakable Caps Lock Modifier")];
+    [str appendString:NSLocalizedStringFromTableInBundle(@"Caps Lock", @"Keyboard", bundle, @"Speakable Caps Lock Modifier")];
   }
   if (kCGEventFlagMaskControl & mask) {
     if ([str length])
       [str appendString:@" + "];
-    [str appendString:NSLocalizedStringFromTableInBundle(@"Control", @"Keyboard", kHotKeyToolKitBundle, @"Speakable Control Modifier")];
+    [str appendString:NSLocalizedStringFromTableInBundle(@"Control", @"Keyboard", bundle, @"Speakable Control Modifier")];
   }
   if (kCGEventFlagMaskAlternate & mask) {
     if ([str length])
       [str appendString:@" + "];
-    [str appendString:NSLocalizedStringFromTableInBundle(@"Option", @"Keyboard", kHotKeyToolKitBundle, @"Speakable Option Modifier")];
+    [str appendString:NSLocalizedStringFromTableInBundle(@"Option", @"Keyboard", bundle, @"Speakable Option Modifier")];
   }
   if (kCGEventFlagMaskShift & mask) {
     if ([str length])
       [str appendString:@" + "];
-    [str appendString:NSLocalizedStringFromTableInBundle(@"Shift", @"Keyboard", kHotKeyToolKitBundle, @"Speakable Shift Modifier")];
+    [str appendString:NSLocalizedStringFromTableInBundle(@"Shift", @"Keyboard", bundle, @"Speakable Shift Modifier")];
   }
   if (kCGEventFlagMaskCommand & mask) {
     if ([str length])
       [str appendString:@" + "];
-    [str appendString:NSLocalizedStringFromTableInBundle(@"Command", @"Keyboard", kHotKeyToolKitBundle, @"Speakable Command Modifier")];
+    [str appendString:NSLocalizedStringFromTableInBundle(@"Command", @"Keyboard", bundle, @"Speakable Command Modifier")];
   }
-  return wb_autorelease(str);
+  return [str autorelease];
 }
 
 NSString *HKMapGetStringForUnichar(UniChar character) {
   NSString *str = nil;
   if (kHKNilUnichar == character)
     return str;
+  NSBundle *bundle = [HotKeyToolKitFramework bundle];
   switch (character) {
     case kHKF1Unicode:
-      str = NSLocalizedStringFromTableInBundle(@"F1", @"Keyboard", kHotKeyToolKitBundle, @"F1 Key display String");
+      str = NSLocalizedStringFromTableInBundle(@"F1", @"Keyboard", bundle, @"F1 Key display String");
       break;
     case kHKF2Unicode:
-      str = NSLocalizedStringFromTableInBundle(@"F2", @"Keyboard", kHotKeyToolKitBundle, @"F2 Key display String");
+      str = NSLocalizedStringFromTableInBundle(@"F2", @"Keyboard", bundle, @"F2 Key display String");
       break;
     case kHKF3Unicode:
-      str = NSLocalizedStringFromTableInBundle(@"F3", @"Keyboard", kHotKeyToolKitBundle, @"F3 Key display String");
+      str = NSLocalizedStringFromTableInBundle(@"F3", @"Keyboard", bundle, @"F3 Key display String");
       break;
     case kHKF4Unicode:
-      str = NSLocalizedStringFromTableInBundle(@"F4", @"Keyboard", kHotKeyToolKitBundle, @"F4 Key display String");
+      str = NSLocalizedStringFromTableInBundle(@"F4", @"Keyboard", bundle, @"F4 Key display String");
       break;
       /* functions Unicodes */
     case kHKF5Unicode:
-      str = NSLocalizedStringFromTableInBundle(@"F5", @"Keyboard", kHotKeyToolKitBundle, @"F5 Key display String");
+      str = NSLocalizedStringFromTableInBundle(@"F5", @"Keyboard", bundle, @"F5 Key display String");
       break;
     case kHKF6Unicode:
-      str = NSLocalizedStringFromTableInBundle(@"F6", @"Keyboard", kHotKeyToolKitBundle, @"F6 Key display String");
+      str = NSLocalizedStringFromTableInBundle(@"F6", @"Keyboard", bundle, @"F6 Key display String");
       break;
     case kHKF7Unicode:
-      str = NSLocalizedStringFromTableInBundle(@"F7", @"Keyboard", kHotKeyToolKitBundle, @"F7 Key display String");
+      str = NSLocalizedStringFromTableInBundle(@"F7", @"Keyboard", bundle, @"F7 Key display String");
       break;
     case kHKF8Unicode:
-      str = NSLocalizedStringFromTableInBundle(@"F8", @"Keyboard", kHotKeyToolKitBundle, @"F8 Key display String");
+      str = NSLocalizedStringFromTableInBundle(@"F8", @"Keyboard", bundle, @"F8 Key display String");
       break;
       /* functions Unicodes */
     case kHKF9Unicode:
-      str = NSLocalizedStringFromTableInBundle(@"F9", @"Keyboard", kHotKeyToolKitBundle, @"F9 Key display String");
+      str = NSLocalizedStringFromTableInBundle(@"F9", @"Keyboard", bundle, @"F9 Key display String");
       break;
     case kHKF10Unicode:
-      str = NSLocalizedStringFromTableInBundle(@"F10", @"Keyboard", kHotKeyToolKitBundle, @"F10 Key display String");
+      str = NSLocalizedStringFromTableInBundle(@"F10", @"Keyboard", bundle, @"F10 Key display String");
       break;
     case kHKF11Unicode:
-      str = NSLocalizedStringFromTableInBundle(@"F11", @"Keyboard", kHotKeyToolKitBundle, @"F11 Key display String");
+      str = NSLocalizedStringFromTableInBundle(@"F11", @"Keyboard", bundle, @"F11 Key display String");
       break;
     case kHKF12Unicode:
-      str = NSLocalizedStringFromTableInBundle(@"F12", @"Keyboard", kHotKeyToolKitBundle, @"F12 Key display String");
+      str = NSLocalizedStringFromTableInBundle(@"F12", @"Keyboard", bundle, @"F12 Key display String");
       break;
       /* functions Unicodes */
     case kHKF13Unicode:
-      str = NSLocalizedStringFromTableInBundle(@"F13", @"Keyboard", kHotKeyToolKitBundle, @"F13 Key display String");
+      str = NSLocalizedStringFromTableInBundle(@"F13", @"Keyboard", bundle, @"F13 Key display String");
       break;
     case kHKF14Unicode:
-      str = NSLocalizedStringFromTableInBundle(@"F14", @"Keyboard", kHotKeyToolKitBundle, @"F14 Key display String");
+      str = NSLocalizedStringFromTableInBundle(@"F14", @"Keyboard", bundle, @"F14 Key display String");
       break;
     case kHKF15Unicode:
-      str = NSLocalizedStringFromTableInBundle(@"F15", @"Keyboard", kHotKeyToolKitBundle, @"F15 Key display String");
+      str = NSLocalizedStringFromTableInBundle(@"F15", @"Keyboard", bundle, @"F15 Key display String");
       break;
     case kHKF16Unicode:
-      str = NSLocalizedStringFromTableInBundle(@"F16", @"Keyboard", kHotKeyToolKitBundle, @"F16 Key display String");
+      str = NSLocalizedStringFromTableInBundle(@"F16", @"Keyboard", bundle, @"F16 Key display String");
       break;
       /* aluminium keyboard */
     case kHKF17Unicode:
-      str = NSLocalizedStringFromTableInBundle(@"F17", @"Keyboard", kHotKeyToolKitBundle, @"F17 Key display String");
+      str = NSLocalizedStringFromTableInBundle(@"F17", @"Keyboard", bundle, @"F17 Key display String");
       break;
     case kHKF18Unicode:
-      str = NSLocalizedStringFromTableInBundle(@"F18", @"Keyboard", kHotKeyToolKitBundle, @"F18 Key display String");
+      str = NSLocalizedStringFromTableInBundle(@"F18", @"Keyboard", bundle, @"F18 Key display String");
       break;
     case kHKF19Unicode:
-      str = NSLocalizedStringFromTableInBundle(@"F19", @"Keyboard", kHotKeyToolKitBundle, @"F19 Key display String");
+      str = NSLocalizedStringFromTableInBundle(@"F19", @"Keyboard", bundle, @"F19 Key display String");
       break;
       /* editing utility Unicodes */
     case kHKHelpUnicode:
-      str = NSLocalizedStringFromTableInBundle(@"help", @"Keyboard", kHotKeyToolKitBundle, @"Help Key display String");
+      str = NSLocalizedStringFromTableInBundle(@"help", @"Keyboard", bundle, @"Help Key display String");
       break;
     case ' ':
-      str = NSLocalizedStringFromTableInBundle(@"spc", @"Keyboard", kHotKeyToolKitBundle, @"Space Key display String");
+      str = NSLocalizedStringFromTableInBundle(@"spc", @"Keyboard", bundle, @"Space Key display String");
       break;
       /* Special Chars */
     case kHKDeleteUnicode:
@@ -493,7 +618,7 @@ NSString *HKMapGetStringForUnichar(UniChar character) {
       break;
   }
   if (!str)
-    // Si caractère Ascii, on met en majuscule (comme sur les touches du clavier en fait).
+    // Choose uppercase variant for ASCII chars (that's how they are shown on the keyboard).
     str = (character <= 127) ? [SpecialChar(character) uppercaseString] : SpecialChar(character);
   return str;
 }

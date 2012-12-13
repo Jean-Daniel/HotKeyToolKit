@@ -10,15 +10,14 @@
 		1B35ED1C13C0B77300A8AEA6 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1B35ED1B13C0B77300A8AEA6 /* Cocoa.framework */; };
 		1B35ED1E13C0B77D00A8AEA6 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1B35ED1D13C0B77D00A8AEA6 /* Carbon.framework */; };
 		1B35ED2013C0B78200A8AEA6 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1B35ED1F13C0B78200A8AEA6 /* IOKit.framework */; };
-		1B6E9498136B3E5700BECE30 /* HKHotKeyTestCase.m in Sources */ = {isa = PBXBuildFile; fileRef = 985B62EC0719E1750073D36F /* HKHotKeyTestCase.m */; };
-		1B6E9499136B3E5800BECE30 /* HKKeyMapTestCase.m in Sources */ = {isa = PBXBuildFile; fileRef = 985B6D1A0719EDCC0073D36F /* HKKeyMapTestCase.m */; };
-		1B6E94C2136B3F3600BECE30 /* GHUnit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1B6E92CE136B3E0000BECE30 /* GHUnit.framework */; };
-		1B6E94D5136B3FD000BECE30 /* HotKeyToolKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8DC2EF5B0486A6940098B216 /* HotKeyToolKit.framework */; };
-		1B6E959D136B406A00BECE30 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B6E959C136B406A00BECE30 /* main.m */; };
-		85FA5D560BCE526C0060584C /* TISKeyMap.h in Headers */ = {isa = PBXBuildFile; fileRef = 85FA5D540BCE526C0060584C /* TISKeyMap.h */; };
-		85FA5D570BCE526C0060584C /* TISKeyMap.m in Sources */ = {isa = PBXBuildFile; fileRef = 85FA5D550BCE526C0060584C /* TISKeyMap.m */; };
-		85FA5D800BCE57690060584C /* KLKeyMap.h in Headers */ = {isa = PBXBuildFile; fileRef = 85FA5D7E0BCE57690060584C /* KLKeyMap.h */; };
-		85FA5D810BCE57690060584C /* KLKeyMap.m in Sources */ = {isa = PBXBuildFile; fileRef = 85FA5D7F0BCE57690060584C /* KLKeyMap.m */; };
+		1BC0940A16794BF3005FEE87 /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1BC0940916794BF3005FEE87 /* SenTestingKit.framework */; };
+		1BC0941E16794C5E005FEE87 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1B35ED1B13C0B77300A8AEA6 /* Cocoa.framework */; };
+		1BC0941F16794C7E005FEE87 /* HKKeyMapTestCase.m in Sources */ = {isa = PBXBuildFile; fileRef = 985B6D1A0719EDCC0073D36F /* HKKeyMapTestCase.m */; };
+		1BC0942016794C7E005FEE87 /* HKHotKeyTestCase.m in Sources */ = {isa = PBXBuildFile; fileRef = 985B62EC0719E1750073D36F /* HKHotKeyTestCase.m */; };
+		1BC0942116794D05005FEE87 /* HotKeyToolKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8DC2EF5B0486A6940098B216 /* HotKeyToolKit.framework */; };
+		1BF93D2A16792F9E00C78BB3 /* HKDefine.h in Headers */ = {isa = PBXBuildFile; fileRef = 1BF93D2716792F9E00C78BB3 /* HKDefine.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		1BF93D2B16792F9E00C78BB3 /* HKFramework.h in Headers */ = {isa = PBXBuildFile; fileRef = 1BF93D2816792F9E00C78BB3 /* HKFramework.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		1BF93D2C16792F9E00C78BB3 /* HKFramework.m in Sources */ = {isa = PBXBuildFile; fileRef = 1BF93D2916792F9E00C78BB3 /* HKFramework.m */; };
 		8DC2EF530486A6940098B216 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C1666FE841158C02AAC07 /* InfoPlist.strings */; };
 		982B010C05FE954600E8776D /* HKKeymapInternal.h in Headers */ = {isa = PBXBuildFile; fileRef = 982B010A05FE954600E8776D /* HKKeymapInternal.h */; };
 		982B010D05FE954600E8776D /* HKKeymapInternal.m in Sources */ = {isa = PBXBuildFile; fileRef = 982B010B05FE954600E8776D /* HKKeymapInternal.m */; };
@@ -27,11 +26,9 @@
 		984426D305F9430700551005 /* HKKeyMap.h in Headers */ = {isa = PBXBuildFile; fileRef = 984426CB05F9430700551005 /* HKKeyMap.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		984426D405F9430700551005 /* HKTrapWindow.h in Headers */ = {isa = PBXBuildFile; fileRef = 984426CC05F9430700551005 /* HKTrapWindow.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		984426D505F9430700551005 /* HotKeyToolKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 984426CD05F9430700551005 /* HotKeyToolKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		984426D605F9430700551005 /* KeyMap.h in Headers */ = {isa = PBXBuildFile; fileRef = 984426CE05F9430700551005 /* KeyMap.h */; settings = {ATTRIBUTES = (); }; };
 		984426DD05F943A100551005 /* HKKeyMap.m in Sources */ = {isa = PBXBuildFile; fileRef = 984426D805F943A100551005 /* HKKeyMap.m */; };
 		984426DE05F943A100551005 /* HKHotKey.m in Sources */ = {isa = PBXBuildFile; fileRef = 984426D905F943A100551005 /* HKHotKey.m */; };
 		984426DF05F943A100551005 /* HKHotKeyManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 984426DA05F943A100551005 /* HKHotKeyManager.m */; };
-		984426E005F943A100551005 /* KeyMap.m in Sources */ = {isa = PBXBuildFile; fileRef = 984426DB05F943A100551005 /* KeyMap.m */; };
 		984426E105F943A100551005 /* HKTrapWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 984426DC05F943A100551005 /* HKTrapWindow.m */; };
 		98B703D10A86146400DB692D /* HKBase.h in Headers */ = {isa = PBXBuildFile; fileRef = 98B703D00A86146400DB692D /* HKBase.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		98DD082F0A8A8F1D0082AF03 /* Keyboard.strings in Resources */ = {isa = PBXBuildFile; fileRef = 98DD082D0A8A8F1D0082AF03 /* Keyboard.strings */; };
@@ -41,7 +38,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		1BA6DF1113BE899700019BD8 /* PBXContainerItemProxy */ = {
+		1BC0942216794D0D005FEE87 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 0867D690FE84028FC02AAC07 /* Project object */;
 			proxyType = 1;
@@ -57,15 +54,19 @@
 		1B35ED1B13C0B77300A8AEA6 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		1B35ED1D13C0B77D00A8AEA6 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = System/Library/Frameworks/Carbon.framework; sourceTree = SDKROOT; };
 		1B35ED1F13C0B78200A8AEA6 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
-		1B6E92CE136B3E0000BECE30 /* GHUnit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GHUnit.framework; path = /Library/Frameworks/GHUnit.framework; sourceTree = "<absolute>"; };
-		1B6E9487136B3E2200BECE30 /* Tests.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Tests.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		1B6E959C136B406A00BECE30 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		1B8623320ECF8D430006C26B /* SparkRelease.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = SparkRelease.xcconfig; sourceTree = "<group>"; };
-		1B8623330ECF8D430006C26B /* SparkDebug.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = SparkDebug.xcconfig; sourceTree = "<group>"; };
-		85FA5D540BCE526C0060584C /* TISKeyMap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = TISKeyMap.h; sourceTree = "<group>"; };
-		85FA5D550BCE526C0060584C /* TISKeyMap.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = TISKeyMap.m; sourceTree = "<group>"; };
-		85FA5D7E0BCE57690060584C /* KLKeyMap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = KLKeyMap.h; sourceTree = "<group>"; };
-		85FA5D7F0BCE57690060584C /* KLKeyMap.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = KLKeyMap.m; sourceTree = "<group>"; };
+		1BC0940816794BF3005FEE87 /* HKTKTests.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HKTKTests.octest; sourceTree = BUILT_PRODUCTS_DIR; };
+		1BC0940916794BF3005FEE87 /* SenTestingKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SenTestingKit.framework; path = Library/Frameworks/SenTestingKit.framework; sourceTree = DEVELOPER_DIR; };
+		1BF93D1716792E4F00C78BB3 /* debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = debug.xcconfig; sourceTree = "<group>"; };
+		1BF93D1816792E4F00C78BB3 /* project.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = project.xcconfig; sourceTree = "<group>"; };
+		1BF93D1916792E4F00C78BB3 /* release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = release.xcconfig; sourceTree = "<group>"; };
+		1BF93D1B16792E4F00C78BB3 /* application.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = application.xcconfig; sourceTree = "<group>"; };
+		1BF93D1C16792E4F00C78BB3 /* archive.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = archive.xcconfig; sourceTree = "<group>"; };
+		1BF93D1D16792E4F00C78BB3 /* bundle.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = bundle.xcconfig; sourceTree = "<group>"; };
+		1BF93D1E16792E4F00C78BB3 /* dylib.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = dylib.xcconfig; sourceTree = "<group>"; };
+		1BF93D1F16792E4F00C78BB3 /* executable.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = executable.xcconfig; sourceTree = "<group>"; };
+		1BF93D2716792F9E00C78BB3 /* HKDefine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HKDefine.h; sourceTree = "<group>"; };
+		1BF93D2816792F9E00C78BB3 /* HKFramework.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HKFramework.h; sourceTree = "<group>"; };
+		1BF93D2916792F9E00C78BB3 /* HKFramework.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HKFramework.m; sourceTree = "<group>"; };
 		8DC2EF5B0486A6940098B216 /* HotKeyToolKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = HotKeyToolKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		982B010A05FE954600E8776D /* HKKeymapInternal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = HKKeymapInternal.h; sourceTree = "<group>"; };
 		982B010B05FE954600E8776D /* HKKeymapInternal.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = HKKeymapInternal.m; sourceTree = "<group>"; };
@@ -74,11 +75,9 @@
 		984426CB05F9430700551005 /* HKKeyMap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = HKKeyMap.h; sourceTree = "<group>"; };
 		984426CC05F9430700551005 /* HKTrapWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = HKTrapWindow.h; sourceTree = "<group>"; };
 		984426CD05F9430700551005 /* HotKeyToolKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = HotKeyToolKit.h; sourceTree = "<group>"; };
-		984426CE05F9430700551005 /* KeyMap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = KeyMap.h; sourceTree = "<group>"; };
 		984426D805F943A100551005 /* HKKeyMap.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = HKKeyMap.m; sourceTree = "<group>"; };
 		984426D905F943A100551005 /* HKHotKey.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = HKHotKey.m; sourceTree = "<group>"; };
 		984426DA05F943A100551005 /* HKHotKeyManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = HKHotKeyManager.m; sourceTree = "<group>"; };
-		984426DB05F943A100551005 /* KeyMap.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = KeyMap.m; sourceTree = "<group>"; };
 		984426DC05F943A100551005 /* HKTrapWindow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = HKTrapWindow.m; sourceTree = "<group>"; };
 		985B62EB0719E1750073D36F /* HKHotKeyTestCase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HKHotKeyTestCase.h; sourceTree = "<group>"; };
 		985B62EC0719E1750073D36F /* HKHotKeyTestCase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HKHotKeyTestCase.m; sourceTree = "<group>"; };
@@ -94,12 +93,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		1B6E9485136B3E2200BECE30 /* Frameworks */ = {
+		1BC0940416794BF3005FEE87 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1B6E94C2136B3F3600BECE30 /* GHUnit.framework in Frameworks */,
-				1B6E94D5136B3FD000BECE30 /* HotKeyToolKit.framework in Frameworks */,
+				1BC0941E16794C5E005FEE87 /* Cocoa.framework in Frameworks */,
+				1BC0940A16794BF3005FEE87 /* SenTestingKit.framework in Frameworks */,
+				1BC0942116794D05005FEE87 /* HotKeyToolKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -120,7 +120,7 @@
 			isa = PBXGroup;
 			children = (
 				8DC2EF5B0486A6940098B216 /* HotKeyToolKit.framework */,
-				1B6E9487136B3E2200BECE30 /* Tests.app */,
+				1BC0940816794BF3005FEE87 /* HKTKTests.octest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -133,7 +133,7 @@
 				985B62AF0719E0570073D36F /* Tests */,
 				0867D69AFE84028FC02AAC07 /* Frameworks */,
 				034768DFFF38A50411DB9C8B /* Products */,
-				1B7BB7440CBE1F2800484A9E /* xcconfigs */,
+				1BF93D1616792E4F00C78BB3 /* xcconfigs */,
 			);
 			name = HotKeyToolKit;
 			sourceTree = "<group>";
@@ -141,7 +141,10 @@
 		0867D69AFE84028FC02AAC07 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				1058C7B0FEA5585E11CA2CBB /* Linked Frameworks */,
+				1B35ED1F13C0B78200A8AEA6 /* IOKit.framework */,
+				1B35ED1B13C0B77300A8AEA6 /* Cocoa.framework */,
+				1B35ED1D13C0B77D00A8AEA6 /* Carbon.framework */,
+				1BC0940916794BF3005FEE87 /* SenTestingKit.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -161,6 +164,9 @@
 			children = (
 				984426CD05F9430700551005 /* HotKeyToolKit.h */,
 				98B703D00A86146400DB692D /* HKBase.h */,
+				1BF93D2716792F9E00C78BB3 /* HKDefine.h */,
+				1BF93D2816792F9E00C78BB3 /* HKFramework.h */,
+				1BF93D2916792F9E00C78BB3 /* HKFramework.m */,
 				98DD42490A57C9C800F059E5 /* HKEvent.h */,
 				98DD42450A57C9BC00F059E5 /* HKEvent.m */,
 				984426C705F9430700551005 /* HKHotKey.h */,
@@ -176,36 +182,33 @@
 			path = Sources;
 			sourceTree = "<group>";
 		};
-		1058C7B0FEA5585E11CA2CBB /* Linked Frameworks */ = {
+		1BF93D1616792E4F00C78BB3 /* xcconfigs */ = {
 			isa = PBXGroup;
 			children = (
-				1B35ED1F13C0B78200A8AEA6 /* IOKit.framework */,
-				1B35ED1B13C0B77300A8AEA6 /* Cocoa.framework */,
-				1B6E92CE136B3E0000BECE30 /* GHUnit.framework */,
-				1B35ED1D13C0B77D00A8AEA6 /* Carbon.framework */,
-			);
-			name = "Linked Frameworks";
-			sourceTree = "<group>";
-		};
-		1B7BB7440CBE1F2800484A9E /* xcconfigs */ = {
-			isa = PBXGroup;
-			children = (
-				1B8623330ECF8D430006C26B /* SparkDebug.xcconfig */,
-				1B8623320ECF8D430006C26B /* SparkRelease.xcconfig */,
+				1BF93D1716792E4F00C78BB3 /* debug.xcconfig */,
+				1BF93D1816792E4F00C78BB3 /* project.xcconfig */,
+				1BF93D1916792E4F00C78BB3 /* release.xcconfig */,
+				1BF93D1A16792E4F00C78BB3 /* target */,
 			);
 			name = xcconfigs;
 			path = ../xcconfigs;
-			sourceTree = SOURCE_ROOT;
+			sourceTree = "<group>";
+		};
+		1BF93D1A16792E4F00C78BB3 /* target */ = {
+			isa = PBXGroup;
+			children = (
+				1BF93D1B16792E4F00C78BB3 /* application.xcconfig */,
+				1BF93D1C16792E4F00C78BB3 /* archive.xcconfig */,
+				1BF93D1D16792E4F00C78BB3 /* bundle.xcconfig */,
+				1BF93D1E16792E4F00C78BB3 /* dylib.xcconfig */,
+				1BF93D1F16792E4F00C78BB3 /* executable.xcconfig */,
+			);
+			path = target;
+			sourceTree = "<group>";
 		};
 		984426E305F943A800551005 /* Private */ = {
 			isa = PBXGroup;
 			children = (
-				984426CE05F9430700551005 /* KeyMap.h */,
-				984426DB05F943A100551005 /* KeyMap.m */,
-				85FA5D7E0BCE57690060584C /* KLKeyMap.h */,
-				85FA5D7F0BCE57690060584C /* KLKeyMap.m */,
-				85FA5D540BCE526C0060584C /* TISKeyMap.h */,
-				85FA5D550BCE526C0060584C /* TISKeyMap.m */,
 				98DD3FE20A57C2A200F059E5 /* ModifierMap.m */,
 				982B010A05FE954600E8776D /* HKKeymapInternal.h */,
 				982B010B05FE954600E8776D /* HKKeymapInternal.m */,
@@ -217,7 +220,6 @@
 			isa = PBXGroup;
 			children = (
 				985B6D170719ED7E0073D36F /* Info.plist */,
-				1B6E959C136B406A00BECE30 /* main.m */,
 				985B6D190719EDCC0073D36F /* HKKeyMapTestCase.h */,
 				985B6D1A0719EDCC0073D36F /* HKKeyMapTestCase.m */,
 				985B62EB0719E1750073D36F /* HKHotKeyTestCase.h */,
@@ -238,35 +240,35 @@
 				984426D305F9430700551005 /* HKKeyMap.h in Headers */,
 				984426D405F9430700551005 /* HKTrapWindow.h in Headers */,
 				984426D505F9430700551005 /* HotKeyToolKit.h in Headers */,
-				984426D605F9430700551005 /* KeyMap.h in Headers */,
+				1BF93D2A16792F9E00C78BB3 /* HKDefine.h in Headers */,
 				982B010C05FE954600E8776D /* HKKeymapInternal.h in Headers */,
+				1BF93D2B16792F9E00C78BB3 /* HKFramework.h in Headers */,
 				98DD424A0A57C9C800F059E5 /* HKEvent.h in Headers */,
 				98B703D10A86146400DB692D /* HKBase.h in Headers */,
-				85FA5D560BCE526C0060584C /* TISKeyMap.h in Headers */,
-				85FA5D800BCE57690060584C /* KLKeyMap.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
-		1B6E9486136B3E2200BECE30 /* Tests */ = {
+		1BC0940716794BF3005FEE87 /* HKTKTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 1B6E948E136B3E2200BECE30 /* Build configuration list for PBXNativeTarget "Tests" */;
+			buildConfigurationList = 1BC0941B16794BF3005FEE87 /* Build configuration list for PBXNativeTarget "HKTKTests" */;
 			buildPhases = (
-				1B6E9483136B3E2200BECE30 /* Resources */,
-				1B6E9484136B3E2200BECE30 /* Sources */,
-				1B6E9485136B3E2200BECE30 /* Frameworks */,
+				1BC0940316794BF3005FEE87 /* Sources */,
+				1BC0940416794BF3005FEE87 /* Frameworks */,
+				1BC0940516794BF3005FEE87 /* Resources */,
+				1BC0940616794BF3005FEE87 /* ShellScript */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				1BA6DF1213BE899700019BD8 /* PBXTargetDependency */,
+				1BC0942316794D0D005FEE87 /* PBXTargetDependency */,
 			);
-			name = Tests;
-			productName = Tests;
-			productReference = 1B6E9487136B3E2200BECE30 /* Tests.app */;
-			productType = "com.apple.product-type.application";
+			name = HKTKTests;
+			productName = HKTKTests;
+			productReference = 1BC0940816794BF3005FEE87 /* HKTKTests.octest */;
+			productType = "com.apple.product-type.bundle";
 		};
 		8DC2EF4F0486A6940098B216 /* HotKeyToolKit */ = {
 			isa = PBXNativeTarget;
@@ -309,14 +311,14 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				1B6E9486136B3E2200BECE30 /* Tests */,
 				8DC2EF4F0486A6940098B216 /* HotKeyToolKit */,
+				1BC0940716794BF3005FEE87 /* HKTKTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		1B6E9483136B3E2200BECE30 /* Resources */ = {
+		1BC0940516794BF3005FEE87 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -344,14 +346,29 @@
 		};
 /* End PBXRezBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		1BC0940616794BF3005FEE87 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Run the unit tests in this test bundle.\n\"${SYSTEM_DEVELOPER_DIR}/Tools/RunUnitTests\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
-		1B6E9484136B3E2200BECE30 /* Sources */ = {
+		1BC0940316794BF3005FEE87 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1B6E9498136B3E5700BECE30 /* HKHotKeyTestCase.m in Sources */,
-				1B6E9499136B3E5800BECE30 /* HKKeyMapTestCase.m in Sources */,
-				1B6E959D136B406A00BECE30 /* main.m in Sources */,
+				1BC0941F16794C7E005FEE87 /* HKKeyMapTestCase.m in Sources */,
+				1BC0942016794C7E005FEE87 /* HKHotKeyTestCase.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -364,21 +381,19 @@
 				984426DF05F943A100551005 /* HKHotKeyManager.m in Sources */,
 				984426E105F943A100551005 /* HKTrapWindow.m in Sources */,
 				98DD42460A57C9BC00F059E5 /* HKEvent.m in Sources */,
-				984426E005F943A100551005 /* KeyMap.m in Sources */,
 				98DD3FE30A57C2A200F059E5 /* ModifierMap.m in Sources */,
 				982B010D05FE954600E8776D /* HKKeymapInternal.m in Sources */,
-				85FA5D570BCE526C0060584C /* TISKeyMap.m in Sources */,
-				85FA5D810BCE57690060584C /* KLKeyMap.m in Sources */,
+				1BF93D2C16792F9E00C78BB3 /* HKFramework.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		1BA6DF1213BE899700019BD8 /* PBXTargetDependency */ = {
+		1BC0942316794D0D005FEE87 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 8DC2EF4F0486A6940098B216 /* HotKeyToolKit */;
-			targetProxy = 1BA6DF1113BE899700019BD8 /* PBXContainerItemProxy */;
+			targetProxy = 1BC0942216794D0D005FEE87 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -404,70 +419,64 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
-		1B6E948C136B3E2200BECE30 /* Debug */ = {
+		1BC0941C16794BF3005FEE87 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				FRAMEWORK_SEARCH_PATHS = "\"$(DEVELOPER_LIBRARY_DIR)/Frameworks\"";
 				INFOPLIST_FILE = Tests/Info.plist;
-				INSTALL_PATH = "$(HOME)/Applications";
-				PRODUCT_NAME = Tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = octest;
 			};
 			name = Debug;
 		};
-		1B6E948D136B3E2200BECE30 /* Release */ = {
+		1BC0941D16794BF3005FEE87 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				FRAMEWORK_SEARCH_PATHS = "\"$(DEVELOPER_LIBRARY_DIR)/Frameworks\"";
 				INFOPLIST_FILE = Tests/Info.plist;
-				INSTALL_PATH = "$(HOME)/Applications";
-				PRODUCT_NAME = Tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = octest;
 			};
 			name = Release;
 		};
 		98EF7D5508645328007BC81A /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 1BF93D1E16792E4F00C78BB3 /* dylib.xcconfig */;
 			buildSettings = {
 				CURRENT_PROJECT_VERSION = 460;
 				DYLIB_COMPATIBILITY_VERSION = 2;
 				DYLIB_CURRENT_VERSION = 460;
 				FRAMEWORK_VERSION = A;
 				INFOPLIST_FILE = Info.plist;
-				INSTALL_PATH = "@executable_path/../Frameworks";
-				OTHER_LDFLAGS = (
-					"$(inherits)",
-					"-seg1addr",
-					0xD0000000,
-				);
+				INSTALL_PATH = "@rpath";
 				PRODUCT_NAME = HotKeyToolKit;
 			};
 			name = Debug;
 		};
 		98EF7D5D08645328007BC81A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 1B8623330ECF8D430006C26B /* SparkDebug.xcconfig */;
+			baseConfigurationReference = 1BF93D1716792E4F00C78BB3 /* debug.xcconfig */;
 			buildSettings = {
 			};
 			name = Debug;
 		};
 		98EFD03D0B58448D00AD4492 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 1BF93D1E16792E4F00C78BB3 /* dylib.xcconfig */;
 			buildSettings = {
 				CURRENT_PROJECT_VERSION = 460;
 				DYLIB_COMPATIBILITY_VERSION = 2;
 				DYLIB_CURRENT_VERSION = 460;
 				FRAMEWORK_VERSION = A;
 				INFOPLIST_FILE = Info.plist;
-				INSTALL_PATH = "@executable_path/../Frameworks";
-				OTHER_LDFLAGS = (
-					"$(inherits)",
-					"-seg1addr",
-					0xD0000000,
-				);
+				INSTALL_PATH = "@rpath";
 				PRODUCT_NAME = HotKeyToolKit;
 			};
 			name = Release;
 		};
 		98EFD0410B58448D00AD4492 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 1B8623320ECF8D430006C26B /* SparkRelease.xcconfig */;
+			baseConfigurationReference = 1BF93D1916792E4F00C78BB3 /* release.xcconfig */;
 			buildSettings = {
 			};
 			name = Release;
@@ -475,14 +484,13 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		1B6E948E136B3E2200BECE30 /* Build configuration list for PBXNativeTarget "Tests" */ = {
+		1BC0941B16794BF3005FEE87 /* Build configuration list for PBXNativeTarget "HKTKTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				1B6E948C136B3E2200BECE30 /* Debug */,
-				1B6E948D136B3E2200BECE30 /* Release */,
+				1BC0941C16794BF3005FEE87 /* Debug */,
+				1BC0941D16794BF3005FEE87 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Debug;
 		};
 		98EF7D5408645328007BC81A /* Build configuration list for PBXNativeTarget "HotKeyToolKit" */ = {
 			isa = XCConfigurationList;

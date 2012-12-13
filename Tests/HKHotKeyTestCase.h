@@ -3,13 +3,13 @@
  *  HotKeyToolKit
  *
  *  Created by Jean-Daniel Dupas.
- *  Copyright © 2004 - 2011 Shadow Lab. All rights reserved.
+ *  Copyright © 2004 - 2012 Shadow Lab. All rights reserved.
  */
 
-#import <GHUnit/GHUnit.h>
+#import <SenTestingKit/SenTestingKit.h>
 
 @class HKHotKey;
-@interface HKHotKeyTests : GHTestCase {
+@interface HKHotKeyTests : SenTestCase {
 @private
   HKHotKey *_hotkey;
 }
