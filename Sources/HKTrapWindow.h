@@ -48,22 +48,15 @@ HK_OBJC_EXPORT
     unsigned int skipverify:1;
     unsigned int :29;
   } _twFlags;
-  NSTextField *_trapField;
 }
 
-- (BOOL)isTrapping;
-- (void)setTrapping:(BOOL)flag;
-
-- (BOOL)verifyHotKey;
-- (void)setVerifyHotKey:(BOOL)flag;
-
-- (NSTextField *)trapField;
-- (void)setTrapField:(NSTextField *)newTrapField;
+@property(nonatomic) BOOL trapping;
+@property(nonatomic) BOOL verifyHotKey;
 
 /* simulate event (usefull when want to catch an already registred hotkey) */
 - (void)handleHotKey:(HKHotKey *)aKey;
 
-@property(assign) id<HKTrapWindowDelegate> delegate;
+@property(nonatomic, assign) id<HKTrapWindowDelegate> delegate;
 
 @end
 
@@ -75,23 +68,22 @@ HK_OBJC_EXPORT
 @protocol HKTrapWindowDelegate <NSWindowDelegate>
 @optional
 /*!
- @method     trapWindow:needPerformKeyEquivalent:
- @abstract   This method permit to block some key equivalent and to handle others (like ESC key equivalent).
+ @abstract   Implements this method to filter which key equivalent should be handle by the windows or trapped.
+ 							This method is required if you don't want to catch shortcut like 'ESC'.
  @param      window The Trap Window.
  @param      theEvent
- @result     If returns YES, key equivalents are handle as in normal Windows. If returns NO they are not processed.
+ @result     Returns YES to catch the event and prevent it processing by the window.
  */
-- (BOOL)trapWindow:(HKTrapWindow *)window needPerformKeyEquivalent:(NSEvent *)theEvent;
+- (BOOL)trapWindow:(HKTrapWindow *)window shouldTrapKeyEquivalent:(NSEvent *)theEvent;
 
 /*!
- @method     trapWindow:needProceedKeyEvent:
- @discussion You can use this method to avoid catching event like <code>return</code> or <code>escape</code>.
- Return YES to proceed the event and don't catch it.
+ @discussion Implements this method to filter which key events should be caught.
+ 							You can use this method to prevent catching of events like <code>return</code> or <code>escape</code>.
  @param      window The Trap Window.
  @param      theEvent The event to proceed.
- @result     if returns YES, the event is proceed and not catch.
+ @result     Returns YES to catch the event and prevent it processing by the window.
  */
-- (BOOL)trapWindow:(HKTrapWindow *)window needProceedKeyEvent:(NSEvent *)theEvent;
+- (BOOL)trapWindow:(HKTrapWindow *)window shouldTrapKeyEvent:(NSEvent *)theEvent;
 
 /* hotkey filter */
 - (BOOL)trapWindow:(HKTrapWindow *)window isValidHotKey:(HKKeycode)keycode modifier:(HKModifier)modifier;
