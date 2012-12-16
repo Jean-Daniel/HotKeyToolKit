@@ -22,7 +22,7 @@
 		982B010C05FE954600E8776D /* HKKeymapInternal.h in Headers */ = {isa = PBXBuildFile; fileRef = 982B010A05FE954600E8776D /* HKKeymapInternal.h */; };
 		982B010D05FE954600E8776D /* HKKeymapInternal.m in Sources */ = {isa = PBXBuildFile; fileRef = 982B010B05FE954600E8776D /* HKKeymapInternal.m */; };
 		984426CF05F9430700551005 /* HKHotKey.h in Headers */ = {isa = PBXBuildFile; fileRef = 984426C705F9430700551005 /* HKHotKey.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		984426D105F9430700551005 /* HKHotKeyManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 984426C905F9430700551005 /* HKHotKeyManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		984426D105F9430700551005 /* HKHotKeyManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 984426C905F9430700551005 /* HKHotKeyManager.h */; settings = {ATTRIBUTES = (); }; };
 		984426D305F9430700551005 /* HKKeyMap.h in Headers */ = {isa = PBXBuildFile; fileRef = 984426CB05F9430700551005 /* HKKeyMap.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		984426D405F9430700551005 /* HKTrapWindow.h in Headers */ = {isa = PBXBuildFile; fileRef = 984426CC05F9430700551005 /* HKTrapWindow.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		984426D505F9430700551005 /* HotKeyToolKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 984426CD05F9430700551005 /* HotKeyToolKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -236,7 +236,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				984426CF05F9430700551005 /* HKHotKey.h in Headers */,
-				984426D105F9430700551005 /* HKHotKeyManager.h in Headers */,
 				984426D305F9430700551005 /* HKKeyMap.h in Headers */,
 				984426D405F9430700551005 /* HKTrapWindow.h in Headers */,
 				984426D505F9430700551005 /* HotKeyToolKit.h in Headers */,
@@ -245,6 +244,7 @@
 				1BF93D2B16792F9E00C78BB3 /* HKFramework.h in Headers */,
 				98DD424A0A57C9C800F059E5 /* HKEvent.h in Headers */,
 				98B703D10A86146400DB692D /* HKBase.h in Headers */,
+				984426D105F9430700551005 /* HKHotKeyManager.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -491,6 +491,7 @@
 				1BC0941D16794BF3005FEE87 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
 		};
 		98EF7D5408645328007BC81A /* Build configuration list for PBXNativeTarget "HotKeyToolKit" */ = {
 			isa = XCConfigurationList;

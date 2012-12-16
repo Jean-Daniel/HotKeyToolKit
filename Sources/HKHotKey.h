@@ -223,3 +223,18 @@ NSTimeInterval HKGetSystemKeyRepeatInterval(void);
 HK_EXPORT
 NSTimeInterval HKGetSystemInitialKeyRepeatInterval(void);
 
+// MARK: Registration Utilities
+/*!
+ @function
+ @abstract   Use to define if a Shortcut is valid (not already used,…)
+ @discussion You can customize this function result by providing a HKHotKeyFilter to the Manager (see setShortcutFilter).
+ @param      code a Virtual Keycode.
+ @param      modifier the modifier keys.
+ @result     Returns YES if the keystrock is valid.
+ */
+HK_EXPORT
+BOOL HKHotKeyCheckKeyCodeAndModifier(HKKeycode code, HKModifier modifier);
+
+/* Debugging purpose */
+HK_EXPORT BOOL HKTraceHotKeyEvents;
+

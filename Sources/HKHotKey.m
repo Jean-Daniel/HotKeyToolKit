@@ -207,14 +207,14 @@ void _checkNotRegistred(HKHotKey *self) {
 
   BOOL result = YES;
   if (flag) { // if register
-    if ([[HKHotKeyManager sharedManager] registerHotKey:self])
+    if (HKHotKeyRegister(self))
       _hkFlags.registred = 1; // Set registred flag
     else
       result = NO;
   } else { // If unregister
     [self hk_invalidateTimer];
     _hkFlags.registred = 0;
-    result = [[HKHotKeyManager sharedManager] unregisterHotKey:self];
+    result = HKHotKeyUnregister(self);
   }
   return result;
 }
