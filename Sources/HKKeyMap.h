@@ -3,16 +3,18 @@
  *  HotKeyToolKit
  *
  *  Created by Jean-Daniel Dupas.
- *  Copyright © 2004 - 2012 Shadow Lab. All rights reserved.
+ *  Copyright © 2004 - 2013 Jean-Daniel Dupas. All rights reserved.
  */
 /*!
  @header HKKeyMap
  @abstract A set of converter to map between Keyboard Hardware keycode and represented character.
  */
 
+#import <Cocoa/Cocoa.h>
+
 #import <HotKeyToolKit/HKBase.h>
 
-#pragma mark Constants definition
+// MARK: Constants definition
 HK_EXPORT
 const UniChar kHKNilUnichar;
 
@@ -261,7 +263,7 @@ HK_OBJC_EXPORT
 
 /*!
  @abstract   Advanced reverse mapping function.
- @param      modifier On return, first keystroke modifier. Pass <code>NULL</code> if you do not want it.
+ @param      modifiers On return, first keystroke modifier. Pass <code>NULL</code> if you do not want it.
  @result     Returns virtual keycode of the keystroke needed to generate <code>character</code>,
  or kHKInvalidVirtualKeyCode if need more than one keystroke to generate the character, except if character is a deadkey output (eg: ^, ¨, …).
  */
@@ -292,8 +294,6 @@ typedef NSInteger HKModifierFormat;
 /*!
  @function
  @abstract   Convert modifiers from one domain to another domain. All HKKeyMap function use native domain modifiers.
- @param      mask A Cocoa modifier mask.
- @result     Return a carbon modifier.
  */
 HK_EXPORT
 NSUInteger HKModifierConvert(NSUInteger modifier, HKModifierFormat input, HKModifierFormat output);

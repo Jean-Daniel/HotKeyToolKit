@@ -1,6 +1,6 @@
 
-#if !defined(__HK_FRAMEWORK_H)
-#define __HK_FRAMEWORK_H 1
+#if !defined(HK_FRAMEWORK_H__)
+#define HK_FRAMEWORK_H__ 1
 
 #import <Foundation/Foundation.h>
 
@@ -18,4 +18,4 @@ HK_OBJC_EXPORT
 
 @end
 
-#endif /* __HK_FRAMEWORK_H */
+#endif /* HK_FRAMEWORK_H__ */

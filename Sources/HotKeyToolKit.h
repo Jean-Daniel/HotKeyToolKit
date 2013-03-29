@@ -3,7 +3,7 @@
  *  HotKeyToolKit
  *
  *  Created by Jean-Daniel Dupas.
- *  Copyright © 2004 - 2012 Shadow Lab. All rights reserved.
+ *  Copyright © 2004 - 2013 Jean-Daniel Dupas. All rights reserved.
  */
 /*!
     @header		HotKeyToolKit
@@ -17,4 +17,3 @@
 #import <HotKeyToolKit/HKKeyMap.h>
 
 #import <HotKeyToolKit/HKTrapWindow.h>
-#import <HotKeyToolKit/HKHotKeyManager.h>

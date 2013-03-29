@@ -3,12 +3,8 @@
  *  HotKeyToolKit
  *
  *  Created by Jean-Daniel Dupas.
- *  Copyright © 2004 - 2012 Shadow Lab. All rights reserved.
+ *  Copyright © 2004 - 2013 Jean-Daniel Dupas. All rights reserved.
  */
-/*!
-    @header		HKKeymapInternal
-    @abstract   Abstract layer to access KeyMap on KCHR Keyboard or uchr Keyboard.
-*/
 
 #import <HotKeyToolKit/HKBase.h>
 

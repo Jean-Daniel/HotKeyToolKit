@@ -3,18 +3,18 @@
  *  HotKeyToolKit
  *
  *  Created by Jean-Daniel Dupas.
- *  Copyright © 2004 - 2012 Shadow Lab. All rights reserved.
+ *  Copyright © 2004 - 2013 Jean-Daniel Dupas. All rights reserved.
  */
 
-#if !defined(__HKBASE_H)
-#define __HKBASE_H 1
+#if !defined(HK_BASE_H__)
+#define HK_BASE_H__ 1
 
 #import <HotKeyToolKit/HKDefine.h>
 
 // MARK: Base Types
-#include <CoreServices/CoreServices.h>
+#include <CoreGraphics/CoreGraphics.h>
 
 typedef uint32_t HKModifier;
 typedef CGKeyCode HKKeycode;
 
-#endif /* __HKBASE_H */
+#endif /* HK_BASE_H__ */

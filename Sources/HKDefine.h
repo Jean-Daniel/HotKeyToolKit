@@ -3,13 +3,13 @@
  *  HotKeyToolKit
  *
  *  Created by Jean-Daniel Dupas.
- *  Copyright © 2012 Jean-Daniel Dupas. All rights reserved.
+ *  Copyright © 2013 Jean-Daniel Dupas. All rights reserved.
  *
  * File Generated using “basegen --name=HotKeyToolKit --prefix=hk --objc --framework”.
  */
 
-#if !defined(__HK_DEFINE_H__)
-#define __HK_DEFINE_H__ 1
+#if !defined(HK_DEFINE_H__)
+#define HK_DEFINE_H__ 1
 
 // MARK: Clang Macros
 #ifndef __has_builtin
@@ -281,4 +281,4 @@
 #endif /* ObjC */
 
 
-#endif /* __HK_DEFINE_H__ */
+#endif /* HK_DEFINE_H__ */

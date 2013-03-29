@@ -3,13 +3,13 @@
  *  HotKeyToolKit
  *
  *  Created by Jean-Daniel Dupas.
- *  Copyright © 2004 - 2012 Shadow Lab. All rights reserved.
+ *  Copyright © 2004 - 2013 Jean-Daniel Dupas. All rights reserved.
  */
+
+#import <ApplicationServices/ApplicationServices.h>
 
 #import <HotKeyToolKit/HKBase.h>
 #import <HotKeyToolKit/HKHotKey.h>
-
-#import <ApplicationServices/ApplicationServices.h>
 
 HK_EXPORT
 CGEventSourceRef HKEventCreatePrivateSource(void);
@@ -42,10 +42,8 @@ enum {
 /*!
 @function
  @abstract   Send a keyboard shortcut event to a running process.
- @param      character If you don't know it or you want the keycode be resolved at run time, use <i>kHKNilUnichar</i>.
  @param      keycode If you don't know it or you want the keycode be resolved at run time, use <i>kHKInvalidVirtualKeyCode</i>.
  @param      modifier A combination of Quartz Modifier constants.
- @param      psn The target process serial number or nil to send event to front process.
  @param      usLatency micro seconds. < 0 means process events, else if > 0, uses sleep.
  @result     Returns true of successfully sent.
  */

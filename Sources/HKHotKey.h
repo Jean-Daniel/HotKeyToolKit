@@ -3,16 +3,14 @@
  *  HotKeyToolKit
  *
  *  Created by Jean-Daniel Dupas.
- *  Copyright © 2004 - 2012 Shadow Lab. All rights reserved.
+ *  Copyright © 2004 - 2013 Jean-Daniel Dupas. All rights reserved.
  */
-/*!
-@header HKHotKey
- */
+
 #import <Foundation/Foundation.h>
+
 #import <HotKeyToolKit/HKBase.h>
 
 /*!
-@class HKHotKey
 @abstract	This class represent a Global Hot Key (Shortcut) that can be registred to execute an action when called.
 @discussion	It uses an UniChar and a virtual keycode to store the shortcut so if the keyboard layout change, the shortcut change too.
 */
@@ -55,7 +53,6 @@ HK_OBJC_EXPORT
   @method
  @abstract Creates and returns an new Hot Key with keycode set to <i>code</i> and modifier set to <i>modifier</i>.
  @param code A virtual keycode.
- @param modifier
  @result Returns a new HotKey with keystrock set to <i>keycode</i> and <i>modifier</i>.
  */
 + (instancetype)hotkeyWithKeycode:(HKKeycode)code modifier:(NSUInteger)modifier;
@@ -63,7 +60,6 @@ HK_OBJC_EXPORT
   @method
  @abstract Creates and returns an new Hot Key with character set to <i>character</i> and modifier set to <i>modifier</i>.
  @param character An UniChar.
- @param modifier
  @result Returns a new HotKey with keystrock set to <i>character</i> and <i>modifier</i>.
  */
 + (instancetype)hotkeyWithUnichar:(UniChar)character modifier:(NSUInteger)modifier;
@@ -155,7 +151,6 @@ HK_OBJC_EXPORT
   @method
  @abstract   Sets the stats of the receiver. If flag is YES, the receiver try to register himself as a Global Hot Key.
  @discussion This method call <i>isValid</i> before trying to register and return NO if receiver isn't valid.
- @param		flag
  @result		Returns YES if the stats is already flag or if it succesfully registers or unregisters.
  */
 - (BOOL)setRegistred:(BOOL)flag;

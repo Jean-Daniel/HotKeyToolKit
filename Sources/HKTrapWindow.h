@@ -3,8 +3,10 @@
  *  HotKeyToolKit
  *
  *  Created by Jean-Daniel Dupas.
- *  Copyright © 2004 - 2012 Shadow Lab. All rights reserved.
+ *  Copyright © 2004 - 2013 Jean-Daniel Dupas. All rights reserved.
  */
+
+#import <Cocoa/Cocoa.h>
 
 #import <HotKeyToolKit/HKBase.h>
 
@@ -28,7 +30,6 @@ NSString * const kHKEventCharacterKey;
 
 // MARK: -
 /*!
- @class HKTrapWindow
  @abstract   This Window can be use to record a Hot Key Event.
  @discussion The Window catch all Events and when the
  NSTextField trapField is selected, it block KeyEvents and send a -setHotKey:mask: message
@@ -71,7 +72,6 @@ HK_OBJC_EXPORT
  @abstract   Implements this method to filter which key equivalent should be handle by the windows or trapped.
  							This method is required if you don't want to catch shortcut like 'ESC'.
  @param      window The Trap Window.
- @param      theEvent
  @result     Returns YES to catch the event and prevent it processing by the window.
  */
 - (BOOL)trapWindow:(HKTrapWindow *)window shouldTrapKeyEquivalent:(NSEvent *)theEvent;

@@ -3,7 +3,7 @@
  *  HotKeyToolKit
  *
  *  Created by Jean-Daniel Dupas.
- *  Copyright © 2012 Jean-Daniel Dupas. All rights reserved.
+ *  Copyright © 2013 Jean-Daniel Dupas. All rights reserved.
  */
 
 #import <HotKeyToolKit/HKFramework.h>
