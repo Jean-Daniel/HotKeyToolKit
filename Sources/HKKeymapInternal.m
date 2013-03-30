@@ -395,7 +395,7 @@ OSStatus HKKeyMapContextWithUchrData(const UCKeyboardLayout *layout, Boolean rev
               UCKeyCharSeq unicode = term->charData;
               // Should resolve sequence
               if (__HKUCHRKeyCharIsSequence(unicode)) {
-                //DLog(@"WARNING: Sequence: %u", unicode & 0x3fff);
+                //SPXDebug(@"WARNING: Sequence: %u", unicode & 0x3fff);
               } else {
                 // Get previous keycode and append dead key state
                 code = __HKUtilsFlatDead(code, term->curState);

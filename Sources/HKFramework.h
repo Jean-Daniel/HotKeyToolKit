@@ -1,3 +1,11 @@
+/*
+ *  HKFramework.h
+ *  HotKeyToolKit
+ *
+ *  Created by Jean-Daniel Dupas.
+ *  Copyright © 2013 Jean-Daniel Dupas. All rights reserved.
+ *
+ */
 
 #if !defined(HK_FRAMEWORK_H__)
 #define HK_FRAMEWORK_H__ 1

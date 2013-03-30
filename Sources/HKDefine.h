@@ -5,7 +5,8 @@
  *  Created by Jean-Daniel Dupas.
  *  Copyright © 2013 Jean-Daniel Dupas. All rights reserved.
  *
- * File Generated using “basegen --name=HotKeyToolKit --prefix=hk --objc --framework”.
+ *  File version: 100
+ *  File Generated using “basegen --name=HotKeyToolKit --prefix=hk --objc --framework”.
  */
 
 #if !defined(HK_DEFINE_H__)
