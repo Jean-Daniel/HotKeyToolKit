@@ -15,31 +15,7 @@
 @discussion	It uses an UniChar and a virtual keycode to store the shortcut so if the keyboard layout change, the shortcut change too.
 */
 HK_OBJC_EXPORT
-@interface HKHotKey : NSObject <NSCopying, NSCoding> {
-@private
-  SEL _action;
-  __weak id _target;
-  NSTimer *_repeatTimer;
-  NSTimeInterval _repeatInterval;
-  NSTimeInterval _iRepeatInterval;
-
-  HKModifier _mask;
-  HKKeycode _keycode;
-  UniChar _character;
-
-  /* event */
-  NSTimeInterval _eventTime;
-
-  struct _hk_hkFlags {
-    unsigned int down:1;
-    unsigned int lock:1;
-    unsigned int repeat:1;
-    unsigned int invoked:1;
-    unsigned int onrelease:1;
-    unsigned int registred:1;
-    unsigned int reserved:26;
-  } _hkFlags;
-}
+@interface HKHotKey : NSObject <NSCopying, NSCoding>
 
 #pragma mark -
 #pragma mark Convenient constructors.
@@ -136,7 +112,7 @@ HK_OBJC_EXPORT
 /* Set both keycode and caracter. Does not perform any check */
 - (void)setKeycode:(HKKeycode)keycode character:(UniChar)character;
 
-@property(nonatomic, assign) id target;
+@property(nonatomic, weak) id target;
 @property(nonatomic) SEL action;
 
 @property(nonatomic) BOOL invokeOnKeyUp;

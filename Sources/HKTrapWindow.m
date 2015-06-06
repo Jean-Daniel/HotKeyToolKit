@@ -18,7 +18,15 @@ NSString * const kHKEventCharacterKey = @"EventCharacter";
 NSString * const kHKTrapWindowDidCatchKeyNotification = @"kHKTrapWindowKeyCaught";
 
 #pragma mark -
-@implementation HKTrapWindow
+@implementation HKTrapWindow {
+@private
+  struct _hk_twFlags {
+    unsigned int trap:1;
+    unsigned int resend:1;
+    unsigned int skipverify:1;
+    unsigned int :29;
+  } _twFlags;
+}
 
 - (id<HKTrapWindowDelegate>)delegate {
   return (id<HKTrapWindowDelegate>)[super delegate];

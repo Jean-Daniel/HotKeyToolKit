@@ -24,26 +24,27 @@ CFTimeInterval __HKEventTime(void) {
   return SPXHostTimeToTimeInterval(SPXHostTimeGetCurrent());
 }
 
-@implementation HKHotKey
+@implementation HKHotKey {
+@private
+  NSTimer *_repeatTimer;
 
-@synthesize target = _target;
-@synthesize action = _action;
-
-@synthesize keycode = _keycode;
-@synthesize character = _character;
-@synthesize nativeModifier = _mask;
-
-@synthesize eventTime = _eventTime;
-
-@synthesize repeatInterval = _repeatInterval;
-@synthesize initialRepeatInterval = _iRepeatInterval;
+  struct _hk_hkFlags {
+    unsigned int down:1;
+    unsigned int lock:1;
+    unsigned int repeat:1;
+    unsigned int invoked:1;
+    unsigned int onrelease:1;
+    unsigned int registred:1;
+    unsigned int reserved:26;
+  } _hkFlags;
+}
 
 - (id)copyWithZone:(NSZone *)zone {
   HKHotKey *copy = [[[self class] allocWithZone:zone] init];
   copy->_target = _target;
   copy->_action = _action;
 
-  copy->_mask = _mask;
+  copy->_nativeModifier = _nativeModifier;
   copy->_keycode = _keycode;
   copy->_character = _character;
 
@@ -59,7 +60,7 @@ CFTimeInterval __HKEventTime(void) {
   [aCoder encodeConditionalObject:_target forKey:@"HKTarget"];
   [aCoder encodeObject:NSStringFromSelector(_action) forKey:@"HKAction"];
 
-  [aCoder encodeInt32:_mask forKey:@"HKMask"];
+  [aCoder encodeInt32:_nativeModifier forKey:@"HKMask"];
   [aCoder encodeInt32:_keycode forKey:@"HKKeycode"];
   [aCoder encodeInt32:_character forKey:@"HKCharacter"];
 
@@ -73,9 +74,9 @@ CFTimeInterval __HKEventTime(void) {
     if (action)
       _action = NSSelectorFromString(action);
 
-    _mask = [aCoder decodeInt32ForKey:@"HKMask"];
-    _keycode = [aCoder decodeInt32ForKey:@"HKKeycode"];
-    _character = [aCoder decodeInt32ForKey:@"HKCharacter"];
+    _nativeModifier = [aCoder decodeInt32ForKey:@"HKMask"];
+    _keycode = (HKKeycode)[aCoder decodeInt32ForKey:@"HKKeycode"];
+    _character = (UniChar)[aCoder decodeInt32ForKey:@"HKCharacter"];
 
     _repeatInterval = [aCoder decodeDoubleForKey:@"HKRepeatInterval"];
   }
@@ -85,13 +86,13 @@ CFTimeInterval __HKEventTime(void) {
 #pragma mark -
 #pragma mark Convenient constructors.
 + (id)hotkey {
-  return [[[self alloc] init] autorelease];
+  return [[self alloc] init];
 }
 + (id)hotkeyWithKeycode:(HKKeycode)code modifier:(NSUInteger)modifier {
-  return [[[self alloc] initWithKeycode:code modifier:modifier] autorelease];
+  return [[self alloc] initWithKeycode:code modifier:modifier];
 }
 + (id)hotkeyWithUnichar:(UniChar)character modifier:(NSUInteger)modifier {
-  return [[[self alloc] initWithUnichar:character modifier:modifier] autorelease];
+  return [[self alloc] initWithUnichar:character modifier:modifier];
 }
 
 #pragma mark -
@@ -127,7 +128,6 @@ CFTimeInterval __HKEventTime(void) {
     [self hk_invalidateTimer];
     [self setRegistred:NO];
   }
-  [super dealloc];
 }
 
 - (NSString *)description {
@@ -145,7 +145,7 @@ CFTimeInterval __HKEventTime(void) {
 }
 
 - (NSString*)shortcut {
-  return [HKKeyMap stringRepresentationForCharacter:self.character modifiers:_mask];
+  return [HKKeyMap stringRepresentationForCharacter:self.character modifiers:_nativeModifier];
 }
 
 #pragma mark -
@@ -157,16 +157,16 @@ void _checkNotRegistred(HKHotKey *self) {
 }
 
 - (NSUInteger)modifier {
-  return HKModifierConvert(_mask, kHKModifierFormatNative, kHKModifierFormatCocoa);
+  return HKModifierConvert(_nativeModifier, kHKModifierFormatNative, kHKModifierFormatCocoa);
 }
 - (void)setModifier:(NSUInteger)modifier {
   _checkNotRegistred(self);
-  _mask = (HKModifier)HKModifierConvert(modifier, kHKModifierFormatCocoa, kHKModifierFormatNative);
+  _nativeModifier = (HKModifier)HKModifierConvert(modifier, kHKModifierFormatCocoa, kHKModifierFormatNative);
 }
 
 - (void)setNativeModifier:(HKModifier)modifier {
   _checkNotRegistred(self);
-  _mask = modifier;
+  _nativeModifier = modifier;
 }
 
 - (void)setKeycode:(HKKeycode)keycode {
@@ -223,12 +223,12 @@ void _checkNotRegistred(HKHotKey *self) {
 - (void)setInvokeOnKeyUp:(BOOL)flag { SPXFlagSet(_hkFlags.onrelease, flag); }
 
 - (NSTimeInterval)initialRepeatInterval {
-  if (fiszero(_iRepeatInterval)) {
+  if (fiszero(_initialRepeatInterval)) {
     return HKGetSystemInitialKeyRepeatInterval();
-  } else if (_iRepeatInterval < 0) {
+  } else if (_initialRepeatInterval < 0) {
     return self.repeatInterval;
   }
-  return _iRepeatInterval;
+  return _initialRepeatInterval;
 }
 
 #pragma mark Key Serialization
@@ -262,14 +262,12 @@ void _checkNotRegistred(HKHotKey *self) {
       NSTimeInterval value = [self initialRepeatInterval];
       if (value > 0) {
         value -= (__HKEventTime() - _eventTime); // time elapsed in invoke
-        NSDate *fire = [[NSDate alloc] initWithTimeIntervalSinceNow:value];
-        _repeatTimer = [[NSTimer alloc] initWithFireDate:fire
+        _repeatTimer = [[NSTimer alloc] initWithFireDate:[NSDate dateWithTimeIntervalSinceNow:value]
                                                 interval:[self repeatInterval]
                                                   target:self
                                                 selector:@selector(hk_invoke:)
                                                 userInfo:nil
                                                  repeats:YES];
-        [fire release];
         [[NSRunLoop currentRunLoop] addTimer:_repeatTimer forMode:NSRunLoopCommonModes];
       }
     }
@@ -291,8 +289,9 @@ void _checkNotRegistred(HKHotKey *self) {
     [self willInvoke];
     _hkFlags.lock = 1;
     @try {
-      if (_action && [_target respondsToSelector:_action]) {
-        [_target performSelector:_action withObject:self];
+      id target = _target;
+      if (_action && [target respondsToSelector:_action]) {
+        [target performSelector:_action withObject:self];
       }
     } @catch (id exception) {
       SPXLogException(exception);
@@ -316,7 +315,6 @@ void _checkNotRegistred(HKHotKey *self) {
 - (void)hk_invalidateTimer {
   if (_repeatTimer) {
     [_repeatTimer invalidate];
-    [_repeatTimer release];
     _repeatTimer = nil;
   }
 }
@@ -383,7 +381,7 @@ io_connect_t _HKHIDGetSystemService(void) {
       mach_port_t service = IOIteratorNext(iter);
       if (service) {
         kr = IOServiceOpen(service, mach_task_self(), kIOHIDParamConnectType, &sSystemService);
-        check(KERN_SUCCESS == kr);
+        spx_assert(KERN_SUCCESS == kr, "System service unavailable");
         IOObjectRelease(service);
       }
       IOObjectRelease(iter);

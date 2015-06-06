@@ -6,10 +6,10 @@
  *  Copyright © 2004 - 2013 Jean-Daniel Dupas. All rights reserved.
  */
 
-#import <SenTestingKit/SenTestingKit.h>
+#import <XCTest/XCTest.h>
 
 @class HKHotKey;
-@interface HKHotKeyTests : SenTestCase {
+@interface HKHotKeyTests : XCTestCase {
 @private
   HKHotKey *_hotkey;
 }

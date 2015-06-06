@@ -22,7 +22,7 @@ Note: keycode = 0xff => keycode is 0.
 
 HK_INLINE
 NSInteger __HKUtilsFlatKey(HKKeycode code, HKModifier modifier, UInt32 dead) {
-  check(code < 128);
+  spx_assert(code < 128, "invalid value");
   /* We change keycode 0 to 0xff, so the return value is never 0, as flat == 0 mean invalid */
   /* modifier: modifier use only 16 high bits and 0x3ff00 is 0x3ff << 8 */
   return ((code ? : 0xff) & 0xff) | ((modifier >> 8) & 0x3ff00) | (dead & 0x3fff) << 18;
@@ -321,7 +321,7 @@ OSStatus HKKeyMapContextWithUchrData(const UCKeyboardLayout *layout, Boolean rev
       } else if (__HKUCHROutputIsStateRecord(output[key])) { // if "State Record", save it into deadr table
         NSInteger state = output[key] & 0x3fff;
         // deadr contains as key the state record, and as value, the keystroke we have to use to "produce" this state.
-        __HKMapInsertIfBetter(deadr, (void *)state, key, (HKModifier)tmod[idx], 0);
+        __HKMapInsertIfBetter(deadr, (void *)state, (HKKeycode)key, (HKModifier)tmod[idx], 0);
 
         /* for table without modifiers only, save the record into the fast map */
         if (tmod[idx] == 0 && key < 128) {
@@ -340,7 +340,7 @@ OSStatus HKKeyMapContextWithUchrData(const UCKeyboardLayout *layout, Boolean rev
         }
       } else {
         if (map) {
-          __HKMapInsertIfBetter(map, (void *)(intptr_t)output[key], key, (HKModifier)tmod[idx], 0);
+          __HKMapInsertIfBetter(map, (void *)(intptr_t)output[key], (HKKeycode)key, (HKModifier)tmod[idx], 0);
         }
         // Save it into simple mapping table
         if (tmod[idx] == 0 && key < 128)

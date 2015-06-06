@@ -165,7 +165,6 @@ void _HKKeyMapResetContext(HKKeyMap *self) {
   _HKKeyMapResetContext(self);
   if (_layout)
     CFRelease(_layout);
-  [super dealloc];
 }
 
 - (NSString *)identifier {
@@ -491,7 +490,7 @@ NSString* HKMapGetSpeakableModifierString(HKModifier mask) {
       [str appendString:@" + "];
     [str appendString:NSLocalizedStringFromTableInBundle(@"Command", @"Keyboard", bundle, @"Speakable Command Modifier")];
   }
-  return [str autorelease];
+  return str;
 }
 
 NSString *HKMapGetStringForUnichar(UniChar character) {

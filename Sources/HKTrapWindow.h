@@ -41,15 +41,7 @@ NSString * const kHKEventCharacterKey;
 @class HKHotKey;
 @protocol HKTrapWindowDelegate;
 HK_OBJC_EXPORT
-@interface HKTrapWindow : NSWindow {
-@private
-  struct _hk_twFlags {
-    unsigned int trap:1;
-    unsigned int resend:1;
-    unsigned int skipverify:1;
-    unsigned int :29;
-  } _twFlags;
-}
+@interface HKTrapWindow : NSWindow
 
 @property(nonatomic) BOOL trapping;
 @property(nonatomic) BOOL verifyHotKey;
@@ -57,7 +49,7 @@ HK_OBJC_EXPORT
 /* simulate event (usefull when want to catch an already registred hotkey) */
 - (void)handleHotKey:(HKHotKey *)aKey;
 
-@property(nonatomic, assign) id<HKTrapWindowDelegate> delegate;
+@property(assign) id<HKTrapWindowDelegate> delegate;
 
 @end
 
