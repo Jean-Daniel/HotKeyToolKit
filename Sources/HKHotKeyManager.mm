@@ -37,14 +37,14 @@ static uint32_t sHotKeyUID = 0;
 static EventHandlerRef sHandler;
 
 static
-std::unordered_map<uint32_t, __weak HKHotKey *>&HotKeyMap() {
-  static std::unordered_map<uint32_t, __weak HKHotKey *> *sHotKeys = new std::unordered_map<uint32_t, __weak HKHotKey *>;
+std::unordered_map<uint32_t, __unsafe_unretained HKHotKey *>&HotKeyMap() {
+  static auto *sHotKeys = new std::unordered_map<uint32_t, __unsafe_unretained HKHotKey *>;
   return *sHotKeys;
 }
 
 static
-std::unordered_map<__weak HKHotKey *, EventHotKeyRef, spx::hash>&HotKeyReferencesMap() {
-    static std::unordered_map<__weak HKHotKey *, EventHotKeyRef, spx::hash> *sHotKeyReferences = new std::unordered_map<__weak HKHotKey *, EventHotKeyRef, spx::hash>;
+std::unordered_map<__unsafe_unretained HKHotKey *, EventHotKeyRef, spx::hash> &HotKeyReferencesMap() {
+    static auto *sHotKeyReferences = new std::unordered_map<__unsafe_unretained HKHotKey *, EventHotKeyRef, spx::hash>;
     return *sHotKeyReferences;
 }
 
@@ -62,7 +62,7 @@ BOOL _HKManagerInstallEventHandler() {
 
   OSStatus err = InstallApplicationEventHandler(_HandleHotKeyEvent, GetEventTypeCount(eventTypes), eventTypes, NULL, &ref);
   if (noErr != err) {
-    SPXLogError(@"error while installing event handler: %s", GetMacOSStatusCommentString(err));
+    SPXLogError(@"error while installing event handler: %s", GetMacOSStatusErrorString(err));
     return NO;
   }
 
@@ -81,7 +81,8 @@ void _HKManagerUninstallEventHandler(void) {
 
 HK_INLINE
 bool _HKHotKeyIsRegistred(HKHotKey *hotkey) {
-  return HotKeyReferencesMap().find(hotkey) != HotKeyReferencesMap().end();
+  const auto &map = HotKeyReferencesMap();
+  return map.find(hotkey) != map.end();
 }
 
 BOOL HKHotKeyRegister(HKHotKey *hotkey) {
