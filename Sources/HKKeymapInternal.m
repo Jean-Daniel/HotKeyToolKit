@@ -548,7 +548,7 @@ OSStatus HKKeyMapContextWithKCHRData(const void *layout, bool reverse, HKKeyMapC
   __HKUtilsConvertModifiers(tmod, count);
 
   UInt32 charToKey[256];
-  bzero(charToKey, 256 * sizeof(*charToKey));
+  memset(charToKey, 0, 256 * sizeof(*charToKey));
 
   /* Foreach key in each table */
   for (idx = 0; idx < count; idx++) {
