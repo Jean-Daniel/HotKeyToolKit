@@ -41,7 +41,12 @@ const UniChar kHKNilUnichar = 0xffff;
 - (void)hk_loadLayout;
 @end
 
-@implementation HKKeyMap
+@implementation HKKeyMap {
+@private
+  bool _autoupdate;
+  HKKeyMapContextRef _ctxt;
+  TISInputSourceRef _layout;
+}
 
 HK_INLINE
 void _HKKeyMapUpdate(HKKeyMap *self, bool load) {

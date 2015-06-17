@@ -233,12 +233,7 @@ typedef struct __TISInputSource* TISInputSourceRef;
 typedef struct __HKKeyMapContext *HKKeyMapContextRef;
 
 HK_OBJC_EXPORT
-@interface HKKeyMap : NSObject {
-@private
-  bool _autoupdate;
-  HKKeyMapContextRef _ctxt;
-  TISInputSourceRef _layout;
-}
+@interface HKKeyMap : NSObject
 
 // As the Keyboard Viewer and the Character palette are
 // TISInputSource, we add convenient method to show them here.
@@ -284,12 +279,11 @@ HK_OBJC_EXPORT
 
 @end
 
-enum {
+typedef NS_ENUM(NSInteger, HKModifierFormat) {
   kHKModifierFormatNative, /* kCGEventFlagsMask */
   kHKModifierFormatCarbon, /* Carbon Event modifiers */
   kHKModifierFormatCocoa, /* NSEvent modifiers */
 };
-typedef NSInteger HKModifierFormat;
 
 /*!
  @function

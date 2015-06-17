@@ -18,13 +18,11 @@
 }
 
 + (NSURL *)URLForDirectory:(NSString *)aName {
-  NSString *path = [[[[self bundle] resourcePath] stringByDeletingLastPathComponent] stringByAppendingPathComponent:aName];
-  return path ? [NSURL fileURLWithPath:path isDirectory:YES] : nil;
+  return [[[[self bundle] resourceURL] URLByDeletingLastPathComponent] URLByAppendingPathComponent:aName isDirectory:YES];
 }
 
 + (NSURL *)URLForAuxiliaryExecutable:(NSString *)name {
-  NSString *path = [[[[self bundle] resourcePath] stringByDeletingLastPathComponent] stringByAppendingPathComponent:@"Support"];
-  return path ? [NSURL fileURLWithPath:[path stringByAppendingPathComponent:name]] : nil;
+  return [[self URLForDirectory:@"Support"] URLByAppendingPathComponent:name];
 }
 
 @end
