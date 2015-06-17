@@ -16,7 +16,7 @@ static ProcessSerialNumber _HKGetProcessWithBundleIdentifier(CFStringRef bundleI
 
 #pragma mark -
 HK_INLINE
-void __HKEventPostKeyboardEvent(CGEventSourceRef source, HKKeycode keycode, void *psn, Boolean down, CFIndex latency) {
+void __HKEventPostKeyboardEvent(CGEventSourceRef source, HKKeycode keycode, void *psn, bool down, CFIndex latency) {
   CGEventRef event = CGEventCreateKeyboardEvent(source, keycode, down);
   if (psn)
     CGEventPostToPSN(psn, event);
@@ -86,7 +86,7 @@ void _HKEventPostKeyStroke(HKKeycode keycode, HKModifier modifier, CGEventSource
 }
 
 static
-Boolean _HKEventPostCharacterKeystrokes(UniChar character, CGEventSourceRef source, void *psn, CFIndex latency) {
+bool _HKEventPostCharacterKeystrokes(UniChar character, CGEventSourceRef source, void *psn, CFIndex latency) {
   /* WARNING: look like CGEvent does not support null source (bug) */
   BOOL isource = NO; /* YES if internal source and should be released */
   if (!source) {
@@ -117,7 +117,7 @@ void HKEventPostKeystroke(HKKeycode keycode, HKModifier modifier, CGEventSourceR
   _HKEventPostKeyStroke(keycode, modifier, source, NULL, latency);
 }
 
-Boolean HKEventPostCharacterKeystrokes(UniChar character, CGEventSourceRef source, CFIndex latency) {
+bool HKEventPostCharacterKeystrokes(UniChar character, CGEventSourceRef source, CFIndex latency) {
   return _HKEventPostCharacterKeystrokes(character, source, NULL, latency);
 }
 
@@ -142,7 +142,7 @@ ProcessSerialNumber __HKEventGetPSNForTarget(HKEventTarget target, HKEventTarget
   return psn;
 }
 
-Boolean HKEventPostKeystrokeToTarget(HKKeycode keycode, HKModifier modifier, HKEventTarget target, HKEventTargetType type, CGEventSourceRef source, CFIndex latency) {
+bool HKEventPostKeystrokeToTarget(HKKeycode keycode, HKModifier modifier, HKEventTarget target, HKEventTargetType type, CGEventSourceRef source, CFIndex latency) {
   ProcessSerialNumber psn = __HKEventGetPSNForTarget(target, type);
   if (psn.lowLongOfPSN != kNoProcess) {
     _HKEventPostKeyStroke(keycode, modifier, source, kSystemProcess == psn.lowLongOfPSN ? NULL : &psn, latency);
@@ -151,7 +151,7 @@ Boolean HKEventPostKeystrokeToTarget(HKKeycode keycode, HKModifier modifier, HKE
   return NO;
 }
 
-Boolean HKEventPostCharacterKeystrokesToTarget(UniChar character, HKEventTarget target, HKEventTargetType type, CGEventSourceRef source, CFIndex latency) {
+bool HKEventPostCharacterKeystrokesToTarget(UniChar character, HKEventTarget target, HKEventTargetType type, CGEventSourceRef source, CFIndex latency) {
   ProcessSerialNumber psn = __HKEventGetPSNForTarget(target, type);
   if (psn.lowLongOfPSN != kNoProcess) {
     _HKEventPostCharacterKeystrokes(character, source, kSystemProcess == psn.lowLongOfPSN ? NULL : &psn, latency);

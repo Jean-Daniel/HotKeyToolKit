@@ -18,7 +18,7 @@ HK_EXPORT
 void HKEventPostKeystroke(HKKeycode keycode, HKModifier modifier, CGEventSourceRef source, CFIndex latency);
 
 HK_EXPORT
-Boolean HKEventPostCharacterKeystrokes(UniChar character, CGEventSourceRef source, CFIndex latency);
+bool HKEventPostCharacterKeystrokes(UniChar character, CGEventSourceRef source, CFIndex latency);
 
 typedef union {
   OSType signature;
@@ -26,13 +26,12 @@ typedef union {
   ProcessSerialNumber *psn;
 } HKEventTarget;
 
-enum {
+typedef NS_ENUM(NSInteger, HKEventTargetType) {
   kHKEventTargetSystem = 0,
   kHKEventTargetBundle,
   kHKEventTargetProcess,
   kHKEventTargetSignature,
 };
-typedef NSInteger HKEventTargetType;
 
 /* 3 ms should be a good default */
 enum {
@@ -48,10 +47,10 @@ enum {
  @result     Returns true of successfully sent.
  */
 HK_EXPORT
-Boolean HKEventPostKeystrokeToTarget(HKKeycode keycode, HKModifier modifier, HKEventTarget target, HKEventTargetType type, CGEventSourceRef source, CFIndex usLatency);
+bool HKEventPostKeystrokeToTarget(HKKeycode keycode, HKModifier modifier, HKEventTarget target, HKEventTargetType type, CGEventSourceRef source, CFIndex usLatency);
 
 HK_EXPORT
-Boolean HKEventPostCharacterKeystrokesToTarget(UniChar character, HKEventTarget target, HKEventTargetType type, CGEventSourceRef source, CFIndex usLatency);
+bool HKEventPostCharacterKeystrokesToTarget(UniChar character, HKEventTarget target, HKEventTargetType type, CGEventSourceRef source, CFIndex usLatency);
 
 @interface HKHotKey (HKEventExtension)
 

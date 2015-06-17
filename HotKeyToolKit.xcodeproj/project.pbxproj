@@ -54,6 +54,7 @@
 		1B35ED1B13C0B77300A8AEA6 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		1B35ED1D13C0B77D00A8AEA6 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = System/Library/Frameworks/Carbon.framework; sourceTree = SDKROOT; };
 		1B35ED1F13C0B78200A8AEA6 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
+		1B5727E71B248290003441B8 /* framework.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = framework.xcconfig; path = ../../hadron/xcconfigs/target/framework.xcconfig; sourceTree = "<group>"; };
 		1BC0940816794BF3005FEE87 /* HKTKTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HKTKTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		1BF56A5B17C1556900037638 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		1BF93D1716792E4F00C78BB3 /* debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = debug.xcconfig; sourceTree = "<group>"; };
@@ -62,7 +63,6 @@
 		1BF93D1B16792E4F00C78BB3 /* application.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = application.xcconfig; sourceTree = "<group>"; };
 		1BF93D1C16792E4F00C78BB3 /* archive.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = archive.xcconfig; sourceTree = "<group>"; };
 		1BF93D1D16792E4F00C78BB3 /* bundle.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = bundle.xcconfig; sourceTree = "<group>"; };
-		1BF93D1E16792E4F00C78BB3 /* dylib.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = dylib.xcconfig; sourceTree = "<group>"; };
 		1BF93D1F16792E4F00C78BB3 /* executable.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = executable.xcconfig; sourceTree = "<group>"; };
 		1BF93D2716792F9E00C78BB3 /* HKDefine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HKDefine.h; sourceTree = "<group>"; };
 		1BF93D2816792F9E00C78BB3 /* HKFramework.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HKFramework.h; sourceTree = "<group>"; };
@@ -200,7 +200,7 @@
 				1BF93D1B16792E4F00C78BB3 /* application.xcconfig */,
 				1BF93D1C16792E4F00C78BB3 /* archive.xcconfig */,
 				1BF93D1D16792E4F00C78BB3 /* bundle.xcconfig */,
-				1BF93D1E16792E4F00C78BB3 /* dylib.xcconfig */,
+				1B5727E71B248290003441B8 /* framework.xcconfig */,
 				1BF93D1F16792E4F00C78BB3 /* executable.xcconfig */,
 			);
 			path = target;
@@ -427,7 +427,7 @@
 		};
 		98EF7D5508645328007BC81A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 1BF93D1E16792E4F00C78BB3 /* dylib.xcconfig */;
+			baseConfigurationReference = 1B5727E71B248290003441B8 /* framework.xcconfig */;
 			buildSettings = {
 				CURRENT_PROJECT_VERSION = 460;
 				DYLIB_COMPATIBILITY_VERSION = 2;
@@ -448,7 +448,7 @@
 		};
 		98EFD03D0B58448D00AD4492 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 1BF93D1E16792E4F00C78BB3 /* dylib.xcconfig */;
+			baseConfigurationReference = 1B5727E71B248290003441B8 /* framework.xcconfig */;
 			buildSettings = {
 				CURRENT_PROJECT_VERSION = 460;
 				DYLIB_COMPATIBILITY_VERSION = 2;

@@ -253,7 +253,7 @@ bool __HKMapInsertIfBetter(CFMutableDictionaryRef table, void *key, HKKeycode co
   return false;
 }
 
-OSStatus HKKeyMapContextWithUchrData(const UCKeyboardLayout *layout, Boolean reverse, HKKeyMapContext *ctxt) {
+OSStatus HKKeyMapContextWithUchrData(const UCKeyboardLayout *layout, bool reverse, HKKeyMapContext *ctxt) {
   ctxt->dealloc = UchrContextDealloc;
   ctxt->map = (HKCharacterForKeyCodeFunction)UchrCharacterForKeyCode;
   ctxt->reverseMap = (HKKeycodesForCharacterFunction)UchrKeycodesForCharacter;
@@ -503,10 +503,10 @@ NSUInteger KCHRKeycodesForCharacter(KCHRContext *ctxt, UniChar character, HKKeyc
 }
 
 static
-CFMutableDictionaryRef _UpgradeToUnicode(ScriptCode script, UInt32 *keys, UInt32 count, UniChar *umap, Boolean reverse) CF_RETURNS_RETAINED;
+CFMutableDictionaryRef _UpgradeToUnicode(ScriptCode script, UInt32 *keys, UInt32 count, UniChar *umap, bool reverse) CF_RETURNS_RETAINED;
 
 #pragma mark -
-OSStatus HKKeyMapContextWithKCHRData(const void *layout, Boolean reverse, HKKeyMapContext *ctxt) {
+OSStatus HKKeyMapContextWithKCHRData(const void *layout, bool reverse, HKKeyMapContext *ctxt) {
   ctxt->dealloc = KCHRContextDealloc;
   ctxt->map = (HKCharacterForKeyCodeFunction)KCHRCharacterForKeyCode;
   ctxt->reverseMap = (HKKeycodesForCharacterFunction)KCHRKeycodesForCharacter;
@@ -632,7 +632,7 @@ OSStatus HKKeyMapContextWithKCHRData(const void *layout, Boolean reverse, HKKeyM
 }
 
 #pragma mark -
-CFMutableDictionaryRef _UpgradeToUnicode(ScriptCode script, UInt32 *keys, UInt32 count, UniChar *umap, Boolean reverse) {
+CFMutableDictionaryRef _UpgradeToUnicode(ScriptCode script, UInt32 *keys, UInt32 count, UniChar *umap, bool reverse) {
   OSStatus err;
   UniChar result[4];
   ByteCount len = 0;

@@ -22,9 +22,9 @@ struct __HKKeyMapContext {
 };
 
 HK_PRIVATE
-OSStatus HKKeyMapContextWithUchrData(const UCKeyboardLayout *layout, Boolean reverse, HKKeyMapContext *ctxt);
+OSStatus HKKeyMapContextWithUchrData(const UCKeyboardLayout *layout, bool reverse, HKKeyMapContext *ctxt);
 
 #if !__LP64__
 HK_PRIVATE
-OSStatus HKKeyMapContextWithKCHRData(const void *layout, Boolean reverse, HKKeyMapContext *ctxt);
+OSStatus HKKeyMapContextWithKCHRData(const void *layout, bool reverse, HKKeyMapContext *ctxt);
 #endif /* __LP64__ */
