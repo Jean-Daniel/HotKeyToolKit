@@ -41,8 +41,7 @@ CFTimeInterval __HKEventTime(void) {
 
 - (id)copyWithZone:(NSZone *)zone {
   HKHotKey *copy = [[[self class] allocWithZone:zone] init];
-  copy->_target = _target;
-  copy->_action = _action;
+  copy->_actionBlock = [_actionBlock copy];
 
   copy->_nativeModifier = _nativeModifier;
   copy->_keycode = _keycode;
@@ -54,33 +53,6 @@ CFTimeInterval __HKEventTime(void) {
   /* Key isn't registred */
   copy->_hkFlags.onrelease = _hkFlags.onrelease;
   return copy;
-}
-
-- (void)encodeWithCoder:(NSCoder *)aCoder {
-  [aCoder encodeConditionalObject:_target forKey:@"HKTarget"];
-  [aCoder encodeObject:NSStringFromSelector(_action) forKey:@"HKAction"];
-
-  [aCoder encodeInt32:_nativeModifier forKey:@"HKMask"];
-  [aCoder encodeInt32:_keycode forKey:@"HKKeycode"];
-  [aCoder encodeInt32:_character forKey:@"HKCharacter"];
-
-  [aCoder encodeDouble:_repeatInterval forKey:@"HKRepeatInterval"];
-}
-
-- (id)initWithCoder:(NSCoder *)aCoder {
-  if (self = [super init]) {
-    _target = [aCoder decodeObjectForKey:@"HKTarget"];
-    NSString *action = [aCoder decodeObjectForKey:@"HKAction"];
-    if (action)
-      _action = NSSelectorFromString(action);
-
-    _nativeModifier = [aCoder decodeInt32ForKey:@"HKMask"];
-    _keycode = (HKKeycode)[aCoder decodeInt32ForKey:@"HKKeycode"];
-    _character = (UniChar)[aCoder decodeInt32ForKey:@"HKCharacter"];
-
-    _repeatInterval = [aCoder decodeDoubleForKey:@"HKRepeatInterval"];
-  }
-  return self;
 }
 
 #pragma mark -
@@ -289,10 +261,8 @@ void _checkNotRegistred(HKHotKey *self) {
     [self willInvoke];
     _hkFlags.lock = 1;
     @try {
-      id target = _target;
-      if (_action && [target respondsToSelector:_action]) {
-        [target performSelector:_action withObject:self];
-      }
+      if (_actionBlock)
+        _actionBlock();
     } @catch (id exception) {
       SPXLogException(exception);
     }

@@ -15,7 +15,7 @@
 @discussion	It uses an UniChar and a virtual keycode to store the shortcut so if the keyboard layout change, the shortcut change too.
 */
 HK_OBJC_EXPORT
-@interface HKHotKey : NSObject <NSCopying, NSCoding>
+@interface HKHotKey : NSObject <NSCopying>
 
 #pragma mark -
 #pragma mark Convenient constructors.
@@ -112,8 +112,7 @@ HK_OBJC_EXPORT
 /* Set both keycode and caracter. Does not perform any check */
 - (void)setKeycode:(HKKeycode)keycode character:(UniChar)character;
 
-@property(nonatomic, weak) id target;
-@property(nonatomic) SEL action;
+@property(nonatomic, copy) void (^actionBlock)(void);
 
 @property(nonatomic) BOOL invokeOnKeyUp;
 
