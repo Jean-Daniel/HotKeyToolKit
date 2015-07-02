@@ -43,7 +43,7 @@ NSString * const kHKEventCharacterKey;
 HK_OBJC_EXPORT
 @interface HKTrapWindow : NSWindow
 
-@property(nonatomic) BOOL trapping;
+@property(nonatomic, getter=isTrapping) BOOL trapping;
 @property(nonatomic) BOOL verifyHotKey;
 
 /* simulate event (usefull when want to catch an already registred hotkey) */

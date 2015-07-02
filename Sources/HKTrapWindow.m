@@ -43,7 +43,7 @@ NSString * const kHKTrapWindowDidCatchKeyNotification = @"kHKTrapWindowKeyCaught
 }
 #pragma mark -
 #pragma mark Trap accessor
-- (BOOL)trapping {
+- (BOOL)isTrapping {
   return _twFlags.trap;
 }
 
