@@ -295,7 +295,7 @@
 		0867D690FE84028FC02AAC07 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0410;
+				LastUpgradeCheck = 0640;
 				TargetAttributes = {
 					1BC0940716794BF3005FEE87 = {
 						TestTargetID = 8DC2EF4F0486A6940098B216;
@@ -443,6 +443,10 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 1BF93D1716792E4F00C78BB3 /* debug.xcconfig */;
 			buildSettings = {
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				ONLY_ACTIVE_ARCH = YES;
 			};
 			name = Debug;
 		};
@@ -464,6 +468,9 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 1BF93D1916792E4F00C78BB3 /* release.xcconfig */;
 			buildSettings = {
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 			};
 			name = Release;
 		};
