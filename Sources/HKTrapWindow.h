@@ -39,19 +39,7 @@ NSString * const kHKEventCharacterKey;
  it set the value of this textField to the shortCut String Description.
  */
 @class HKHotKey;
-@protocol HKTrapWindowDelegate;
-HK_OBJC_EXPORT
-@interface HKTrapWindow : NSWindow
-
-@property(nonatomic, getter=isTrapping) BOOL trapping;
-@property(nonatomic) BOOL verifyHotKey;
-
-/* simulate event (usefull when want to catch an already registred hotkey) */
-- (void)handleHotKey:(HKHotKey *)aKey;
-
-@property(assign) id<HKTrapWindowDelegate> delegate;
-
-@end
+@class HKTrapWindow;
 
 // MARK: -
 /*!
@@ -92,3 +80,18 @@ HK_OBJC_EXPORT
 - (void)trapWindowDidCatchHotKey:(NSNotification *)aNotification;
 
 @end
+
+// MARK: -
+HK_OBJC_EXPORT
+@interface HKTrapWindow : NSWindow
+
+@property(nonatomic, getter=isTrapping) BOOL trapping;
+@property(nonatomic) BOOL verifyHotKey;
+
+/* simulate event (usefull when want to catch an already registred hotkey) */
+- (void)handleHotKey:(HKHotKey *)aKey;
+
+@property(assign) id<HKTrapWindowDelegate> delegate;
+
+@end
+

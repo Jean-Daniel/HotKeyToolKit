@@ -130,7 +130,8 @@ ProcessSerialNumber __HKEventGetPSNForTarget(HKEventTarget target, HKEventTarget
       break;
     case kHKEventTargetProcess:
       psn = *target.psn;
-      if (kCurrentProcess == psn.lowLongOfPSN) GetCurrentProcess(&psn);
+      if (kCurrentProcess == psn.lowLongOfPSN)
+        GetCurrentProcess(&psn);
       break;
     case kHKEventTargetBundle:
       psn = _HKGetProcessWithBundleIdentifier(target.bundle);
@@ -210,8 +211,8 @@ ProcessSerialNumber _HKGetProcessWithBundleIdentifier(CFStringRef bundleId) {
 
 - (BOOL)sendKeystroke:(CFIndex)latency {
   if ([self isValid]) {
-    HKEventTarget target;
-    ProcessSerialNumber psn;
+    HKEventTarget target = {};
+    ProcessSerialNumber psn = {};
     HKEventTargetType type = kHKEventTargetSystem;
     if ([self isRegistred]) {
       GetFrontProcess(&psn);
@@ -229,7 +230,7 @@ ProcessSerialNumber _HKGetProcessWithBundleIdentifier(CFStringRef bundleId) {
   BOOL result = NO;
   if ([self isValid]) {
     /* Find target and target type */
-    HKEventTarget target;
+    HKEventTarget target = {};
     HKEventTargetType type = kHKEventTargetSystem;
 
     if (signature && signature != kUnknownType) {
