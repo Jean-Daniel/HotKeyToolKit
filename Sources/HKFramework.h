@@ -3,7 +3,7 @@
  *  HotKeyToolKit
  *
  *  Created by Jean-Daniel Dupas.
- *  Copyright © 2013 Jean-Daniel Dupas. All rights reserved.
+ *  Copyright © 2017 Jean-Daniel Dupas. All rights reserved.
  *
  */
 
@@ -21,9 +21,12 @@ HK_OBJC_EXPORT
 + (NSBundle *)bundle;
 + (NSString *)bundleIdentifier;
 
++ (NSString *)bundleVersionString;
+
 + (NSURL *)URLForDirectory:(NSString *)aName;
 + (NSURL *)URLForAuxiliaryExecutable:(NSString *)name;
 
 @end
 
 #endif /* HK_FRAMEWORK_H__ */
+
