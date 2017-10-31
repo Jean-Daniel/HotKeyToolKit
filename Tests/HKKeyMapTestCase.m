@@ -18,7 +18,7 @@
 
 - (void)testDeadKeyRepresentation {
   HKKeyMap *keymap = [HKKeyMap currentKeyMap];
-  UInt32 keycode = 33; // ^ key on french keyboard
+  HKKeycode keycode = 33; // ^ key on french keyboard
   UniChar chr = [keymap characterForKeycode:keycode];
   XCTAssertTrue('^' == chr, @"HKMapGetUnicharForKeycode return '%C' (0x%x) instead of '^'", chr, chr);
 
