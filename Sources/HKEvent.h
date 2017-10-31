@@ -21,16 +21,14 @@ HK_EXPORT
 bool HKEventPostCharacterKeystrokes(UniChar character, CGEventSourceRef source, CFIndex latency);
 
 typedef union {
-  OSType signature;
+  pid_t pid;
   CFStringRef bundle;
-  ProcessSerialNumber *psn;
 } HKEventTarget;
 
 typedef NS_ENUM(NSInteger, HKEventTargetType) {
   kHKEventTargetSystem = 0,
   kHKEventTargetBundle,
   kHKEventTargetProcess,
-  kHKEventTargetSignature,
 };
 
 /* 3 ms should be a good default */
@@ -59,11 +57,10 @@ bool HKEventPostCharacterKeystrokesToTarget(UniChar character, HKEventTarget tar
   /*!
   @method
    @abstract Perform the receiver HotKey on the application specified by <i>signature</i> or <i>bundleId</i>.
-   @discussion If you want to send event system wide, pass '????' or 0 as signature and nil and bundle identifier, or use -sendKeystroke method.
-   @param signature The target application process signature (creator).
+   @discussion If you want to send event system wide, pass nil for the bundle identifier, or use -sendKeystroke method.
    @param bundleId The Bundle identifier of the target process.
    @result YES.
    */
-- (BOOL)sendKeystrokeToApplication:(OSType)signature bundle:(NSString *)bundleId latency:(CFIndex)latency;
+- (BOOL)sendKeystrokeToApplication:(NSString *)bundleId latency:(CFIndex)latency;
 
 @end

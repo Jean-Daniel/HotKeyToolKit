@@ -11,17 +11,24 @@
 
 #include <unistd.h>
 
-static ProcessSerialNumber _HKGetProcessWithSignature(OSType type);
-static ProcessSerialNumber _HKGetProcessWithBundleIdentifier(CFStringRef bundleId);
+static pid_t _HKGetProcessWithBundleIdentifier(CFStringRef bundleId);
 
 #pragma mark -
 HK_INLINE
-void __HKEventPostKeyboardEvent(CGEventSourceRef source, HKKeycode keycode, void *psn, bool down, CFIndex latency) {
+void __HKEventPostKeyboardEvent(CGEventSourceRef source, HKKeycode keycode, pid_t pid, bool down, CFIndex latency) {
   CGEventRef event = CGEventCreateKeyboardEvent(source, keycode, down);
-  if (psn)
-    CGEventPostToPSN(psn, event);
-  else
+  if (pid) {
+    if (kCFCoreFoundationVersionNumber >= kCFCoreFoundationVersionNumber10_11) {
+      CGEventPostToPid(pid, event);
+    } else {
+      ProcessSerialNumber psn;
+      if (noErr == GetProcessForPID(pid, &psn)) {
+        CGEventPostToPSN(&psn, event);
+      }
+    }
+  } else {
     CGEventPost(kCGHIDEventTap, event);
+  }
   CFRelease(event);
   if (latency > 0) {
     /* Avoid to fast typing (5 ms by default) */
@@ -32,7 +39,7 @@ void __HKEventPostKeyboardEvent(CGEventSourceRef source, HKKeycode keycode, void
 }
 
 static
-void _HKEventPostKeyStroke(HKKeycode keycode, HKModifier modifier, CGEventSourceRef source, void *psn, CFIndex latency) {
+void _HKEventPostKeyStroke(HKKeycode keycode, HKModifier modifier, CGEventSourceRef source, pid_t pid, CFIndex latency) {
   /* WARNING: look like CGEvent does not support null source (bug) */
   BOOL isource = NO;
   if (!source) {
@@ -43,41 +50,41 @@ void _HKEventPostKeyStroke(HKKeycode keycode, HKModifier modifier, CGEventSource
   /* Sending Modifier Keydown events */
   if (kCGEventFlagMaskAlphaShift & modifier) {
     /* Lock Caps Lock */
-    __HKEventPostKeyboardEvent(source, kHKVirtualCapsLockKey, psn, YES, latency);
+    __HKEventPostKeyboardEvent(source, kHKVirtualCapsLockKey, pid, YES, latency);
   }
   if (kCGEventFlagMaskShift & modifier) {
-    __HKEventPostKeyboardEvent(source, kHKVirtualShiftKey, psn, YES, latency);
+    __HKEventPostKeyboardEvent(source, kHKVirtualShiftKey, pid, YES, latency);
   }
   if (kCGEventFlagMaskControl & modifier) {
-    __HKEventPostKeyboardEvent(source, kHKVirtualControlKey, psn, YES, latency);
+    __HKEventPostKeyboardEvent(source, kHKVirtualControlKey, pid, YES, latency);
   }
   if (kCGEventFlagMaskAlternate & modifier) {
-    __HKEventPostKeyboardEvent(source, kHKVirtualOptionKey, psn, YES, latency);
+    __HKEventPostKeyboardEvent(source, kHKVirtualOptionKey, pid, YES, latency);
   }
   if (kCGEventFlagMaskCommand & modifier) {
-    __HKEventPostKeyboardEvent(source, kHKVirtualCommandKey, psn, YES, latency);
+    __HKEventPostKeyboardEvent(source, kHKVirtualCommandKey, pid, YES, latency);
   }
 
   /* Sending Character Key events */
-  __HKEventPostKeyboardEvent(source, keycode , psn, YES, latency);
-  __HKEventPostKeyboardEvent(source, keycode, psn, NO, latency);
+  __HKEventPostKeyboardEvent(source, keycode , pid, YES, latency);
+  __HKEventPostKeyboardEvent(source, keycode, pid, NO, latency);
 
   /* Sending Modifiers Key Up events */
   if (kCGEventFlagMaskCommand & modifier) {
-    __HKEventPostKeyboardEvent(source, kHKVirtualCommandKey, psn, NO, latency);
+    __HKEventPostKeyboardEvent(source, kHKVirtualCommandKey, pid, NO, latency);
   }
   if (kCGEventFlagMaskAlternate & modifier) {
-    __HKEventPostKeyboardEvent(source, kHKVirtualOptionKey, psn, NO, latency);
+    __HKEventPostKeyboardEvent(source, kHKVirtualOptionKey, pid, NO, latency);
   }
   if (kCGEventFlagMaskControl & modifier) {
-    __HKEventPostKeyboardEvent(source, kHKVirtualControlKey, psn, NO, latency);
+    __HKEventPostKeyboardEvent(source, kHKVirtualControlKey, pid, NO, latency);
   }
   if (kCGEventFlagMaskShift & modifier) {
-    __HKEventPostKeyboardEvent(source, kHKVirtualShiftKey, psn, NO, latency);
+    __HKEventPostKeyboardEvent(source, kHKVirtualShiftKey, pid, NO, latency);
   }
   if (kCGEventFlagMaskAlphaShift & modifier) {
     /* Unlock Caps Lock */
-    __HKEventPostKeyboardEvent(source, kHKVirtualCapsLockKey, psn, NO, latency);
+    __HKEventPostKeyboardEvent(source, kHKVirtualCapsLockKey, pid, NO, latency);
   }
 
   if (isource && source) {
@@ -86,7 +93,7 @@ void _HKEventPostKeyStroke(HKKeycode keycode, HKModifier modifier, CGEventSource
 }
 
 static
-bool _HKEventPostCharacterKeystrokes(UniChar character, CGEventSourceRef source, void *psn, CFIndex latency) {
+bool _HKEventPostCharacterKeystrokes(UniChar character, CGEventSourceRef source, pid_t pid, CFIndex latency) {
   /* WARNING: look like CGEvent does not support null source (bug) */
   BOOL isource = NO; /* YES if internal source and should be released */
   if (!source) {
@@ -98,7 +105,7 @@ bool _HKEventPostCharacterKeystrokes(UniChar character, CGEventSourceRef source,
   HKModifier mods[8];
   NSUInteger count = [[HKKeyMap currentKeyMap] getKeycodes:keys modifiers:mods maxLength:8 forCharacter:character];
   for (NSUInteger idx = 0; idx < count; idx++) {
-    _HKEventPostKeyStroke(keys[idx], mods[idx], source, psn, latency);
+    _HKEventPostKeyStroke(keys[idx], mods[idx], source, pid, latency);
   }
 
   if (isource && source) {
@@ -114,48 +121,38 @@ CGEventSourceRef HKEventCreatePrivateSource(void) {
 }
 
 void HKEventPostKeystroke(HKKeycode keycode, HKModifier modifier, CGEventSourceRef source, CFIndex latency) {
-  _HKEventPostKeyStroke(keycode, modifier, source, NULL, latency);
+  _HKEventPostKeyStroke(keycode, modifier, source, 0, latency);
 }
 
 bool HKEventPostCharacterKeystrokes(UniChar character, CGEventSourceRef source, CFIndex latency) {
-  return _HKEventPostCharacterKeystrokes(character, source, NULL, latency);
+  return _HKEventPostCharacterKeystrokes(character, source, 0, latency);
 }
 
 HK_INLINE
-ProcessSerialNumber __HKEventGetPSNForTarget(HKEventTarget target, HKEventTargetType type) {
-  ProcessSerialNumber psn = { kNoProcess, kNoProcess };
+pid_t __HKEventGetPSNForTarget(HKEventTarget target, HKEventTargetType type) {
   switch (type) {
     case kHKEventTargetSystem:
-      psn.lowLongOfPSN = kSystemProcess;
-      break;
+      return 0;
     case kHKEventTargetProcess:
-      psn = *target.psn;
-      if (kCurrentProcess == psn.lowLongOfPSN)
-        GetCurrentProcess(&psn);
-      break;
+      return target.pid;
     case kHKEventTargetBundle:
-      psn = _HKGetProcessWithBundleIdentifier(target.bundle);
-      break;
-    case kHKEventTargetSignature:
-      psn = _HKGetProcessWithSignature(target.signature);
-      break;
+      return _HKGetProcessWithBundleIdentifier(target.bundle);
   }
-  return psn;
 }
 
 bool HKEventPostKeystrokeToTarget(HKKeycode keycode, HKModifier modifier, HKEventTarget target, HKEventTargetType type, CGEventSourceRef source, CFIndex latency) {
-  ProcessSerialNumber psn = __HKEventGetPSNForTarget(target, type);
-  if (psn.lowLongOfPSN != kNoProcess) {
-    _HKEventPostKeyStroke(keycode, modifier, source, kSystemProcess == psn.lowLongOfPSN ? NULL : &psn, latency);
+  pid_t pid = __HKEventGetPSNForTarget(target, type);
+  if (pid >= 0) {
+    _HKEventPostKeyStroke(keycode, modifier, source, pid, latency);
     return YES;
   }
   return NO;
 }
 
 bool HKEventPostCharacterKeystrokesToTarget(UniChar character, HKEventTarget target, HKEventTargetType type, CGEventSourceRef source, CFIndex latency) {
-  ProcessSerialNumber psn = __HKEventGetPSNForTarget(target, type);
-  if (psn.lowLongOfPSN != kNoProcess) {
-    _HKEventPostCharacterKeystrokes(character, source, kSystemProcess == psn.lowLongOfPSN ? NULL : &psn, latency);
+  pid_t pid = __HKEventGetPSNForTarget(target, type);
+  if (pid >= 0) {
+    _HKEventPostCharacterKeystrokes(character, source, pid, latency);
     return YES;
   }
   return NO;
@@ -163,47 +160,9 @@ bool HKEventPostCharacterKeystrokesToTarget(UniChar character, HKEventTarget tar
 
 #pragma mark -
 #pragma mark Statics Functions Definition
-ProcessSerialNumber _HKGetProcessWithSignature(OSType type) {
-  ProcessSerialNumber serialNumber = {kNoProcess, kNoProcess};
-  if (type) {
-    ProcessInfoRec info;
-    while (procNotFound != GetNextProcess(&serialNumber))  {
-      info.processInfoLength = (UInt32)sizeof(info);
-      info.processName = NULL;
-#if __LP64__
-      info.processAppRef = NULL;
-#else
-      info.processAppSpec = NULL;
-#endif
-      if (noErr == GetProcessInformation(&serialNumber, &info) && info.processSignature == type) {
-        break;
-      }
-    }
-  }
-  return serialNumber;
-}
-
-ProcessSerialNumber _HKGetProcessWithBundleIdentifier(CFStringRef bundleId) {
-  ProcessSerialNumber serialNumber = { kNoProcess, kNoProcess };
-  CFPropertyListRef procValue;
-  CFDictionaryRef info;
-
-  if (!bundleId) {
-    return serialNumber;
-  }
-  while (procNotFound != GetNextProcess(&serialNumber))  {
-    info = ProcessInformationCopyDictionary(&serialNumber, kProcessDictionaryIncludeAllInformationMask);
-    procValue = CFDictionaryGetValue (info, kCFBundleIdentifierKey);
-
-    if (procValue && (CFEqual(procValue , bundleId)) ) {
-      CFRelease(info);
-      break;
-    }
-    if (info) {
-      CFRelease(info);
-    }
-  }
-  return serialNumber;
+pid_t _HKGetProcessWithBundleIdentifier(CFStringRef bundleId) {
+  NSRunningApplication *app = [[NSRunningApplication runningApplicationsWithBundleIdentifier:SPXCFToNSString(bundleId)] firstObject];
+  return app ? app.processIdentifier : -1;
 }
 
 #pragma mark -
@@ -212,11 +171,9 @@ ProcessSerialNumber _HKGetProcessWithBundleIdentifier(CFStringRef bundleId) {
 - (BOOL)sendKeystroke:(CFIndex)latency {
   if ([self isValid]) {
     HKEventTarget target = {};
-    ProcessSerialNumber psn = {};
     HKEventTargetType type = kHKEventTargetSystem;
     if ([self isRegistred]) {
-      GetFrontProcess(&psn);
-      target.psn = &psn;
+      target.pid = [NSWorkspace.sharedWorkspace frontmostApplication].processIdentifier;
       type = kHKEventTargetProcess;
     }
     HKEventPostKeystrokeToTarget(self.keycode, self.nativeModifier, target, type, NULL, latency);
@@ -226,17 +183,14 @@ ProcessSerialNumber _HKGetProcessWithBundleIdentifier(CFStringRef bundleId) {
   return YES;
 }
 
-- (BOOL)sendKeystrokeToApplication:(OSType)signature bundle:(NSString *)bundleId latency:(CFIndex)latency {
+- (BOOL)sendKeystrokeToApplication:(NSString *)bundleId latency:(CFIndex)latency {
   BOOL result = NO;
   if ([self isValid]) {
     /* Find target and target type */
     HKEventTarget target = {};
     HKEventTargetType type = kHKEventTargetSystem;
 
-    if (signature && signature != kUnknownType) {
-      target.signature = signature;
-      type = kHKEventTargetSignature;
-    } else if (bundleId) {
+    if (bundleId) {
       target.bundle = SPXNSToCFString(bundleId);
       type = kHKEventTargetBundle;
     }
