@@ -80,11 +80,9 @@ NSString * const kHKTrapWindowDidCatchKeyNotification = @"kHKTrapWindowKeyCaught
       valid = [[self delegate] trapWindow:self isValidHotKey:aKey.keycode modifier:aKey.nativeModifier];
 
     if (valid) {
-      NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
-                                @(aKey.keycode), kHKEventKeyCodeKey,
-                                @(aKey.modifier), kHKEventModifierKey,
-                                @(aKey.character), kHKEventCharacterKey,
-                                nil];
+      NSDictionary *userInfo = @{ kHKEventKeyCodeKey: @(aKey.keycode),
+                                  kHKEventModifierKey: @(aKey.modifier),
+                                  kHKEventCharacterKey: @(aKey.character)};
       [[NSNotificationCenter defaultCenter] postNotificationName:kHKTrapWindowDidCatchKeyNotification
                                                           object:self
                                                         userInfo:userInfo];
@@ -137,11 +135,9 @@ NSString * const kHKTrapWindowDidCatchKeyNotification = @"kHKTrapWindowKeyCaught
     code = kHKInvalidVirtualKeyCode;
   }
   if (code != kHKInvalidVirtualKeyCode) {
-    NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
-                              @(code), kHKEventKeyCodeKey,
-                              @(modifier), kHKEventModifierKey,
-                              @(character), kHKEventCharacterKey,
-                              nil];
+    NSDictionary *userInfo = @{ kHKEventKeyCodeKey: @(code),
+                                kHKEventModifierKey: @(modifier),
+                                kHKEventCharacterKey: @(character)};
     [[NSNotificationCenter defaultCenter] postNotificationName:kHKTrapWindowDidCatchKeyNotification
                                                         object:self
                                                       userInfo:userInfo];
