@@ -71,10 +71,9 @@ void _HKKeyMapUpdate(HKKeyMap *self, bool load) {
 
 static
 void _ShowTISPalette(CFStringRef name, NSString *identifier) {
-  NSDictionary *properties = [NSDictionary dictionaryWithObjectsAndKeys:
-                              SPXCFToNSString(name), kTISPropertyInputSourceType,
-                              kTISCategoryPaletteInputSource, kTISPropertyInputSourceCategory,
-                              identifier, kTISPropertyInputSourceID, nil]; //identifier may be nil
+  NSDictionary *properties = @{ SPXCFToNSString(kTISPropertyInputSourceType): SPXCFToNSString(name),
+                                SPXCFToNSString(kTISPropertyInputSourceCategory): SPXCFToNSString(kTISCategoryPaletteInputSource),
+                                SPXCFToNSString(kTISPropertyInputSourceID): identifier}; //identifier may be nil
   TISInputSourceRef src = NULL;
   // See TISCreateInputSourceList for explanation about the double call pattern.
   CFArrayRef list = TISCreateInputSourceList(SPXNSToCFDictionary(properties), false);
