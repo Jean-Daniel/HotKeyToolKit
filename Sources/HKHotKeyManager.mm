@@ -15,6 +15,13 @@
 
 #include <Carbon/Carbon.h>
 
+static inline const char *_OSStatusToStr(OSStatus err) {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+  return GetMacOSStatusErrorString(err);
+#pragma clang diagnostic pop
+}
+
 static
 const OSType kHKHotKeyEventSignature = 'HkTk';
 
@@ -62,7 +69,7 @@ BOOL _HKManagerInstallEventHandler() {
 
   OSStatus err = InstallApplicationEventHandler(_HandleHotKeyEvent, GetEventTypeCount(eventTypes), eventTypes, NULL, &ref);
   if (noErr != err) {
-    SPXLogError(@"error while installing event handler: %s", GetMacOSStatusErrorString(err));
+    SPXLogError(@"error while installing event handler: %s", _OSStatusToStr(err));
     return NO;
   }
 
@@ -75,7 +82,7 @@ void _HKManagerUninstallEventHandler(void) {
   assert(sHandler);
   OSStatus err = RemoveEventHandler(sHandler);
   if (noErr != err)
-    spx_log_error("error while removing event handler: %s", GetMacOSStatusErrorString(err));
+    spx_log_error("error while removing event handler: %s", _OSStatusToStr(err));
   sHandler = NULL;
 }
 
@@ -124,7 +131,7 @@ BOOL HKHotKeyUnregister(HKHotKey *hotkey) {
 
   OSStatus err = _HKUnregisterHotKey(ref->second);
   if (noErr != err) {
-    SPXLogError(@"error while unregistering hotkey %@ : %s", hotkey, GetMacOSStatusErrorString(err));
+    SPXLogError(@"error while unregistering hotkey %@ : %s", hotkey, _OSStatusToStr(err));
     return NO;
   }
 

@@ -276,7 +276,7 @@ void _HKKeyMapResetContext(HKKeyMap *self) {
     if (noErr != err) {
       spx_log_error("Error while trying to get layout data: %s", GetMacOSStatusErrorString(err));
     }
-#pragma clang diagnostic push
+#pragma clang diagnostic pop
 #else
     spx_log_warning("No UCHR data found and 64 bits does not support KCHR.");
     err = paramErr;

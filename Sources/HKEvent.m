@@ -21,10 +21,13 @@ void __HKEventPostKeyboardEvent(CGEventSourceRef source, HKKeycode keycode, pid_
     if (kCFCoreFoundationVersionNumber >= kCFCoreFoundationVersionNumber10_11) {
       CGEventPostToPid(pid, event);
     } else {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
       ProcessSerialNumber psn;
       if (noErr == GetProcessForPID(pid, &psn)) {
         CGEventPostToPSN(&psn, event);
       }
+#pragma clang diagnostic pop
     }
   } else {
     CGEventPost(kCGHIDEventTap, event);
