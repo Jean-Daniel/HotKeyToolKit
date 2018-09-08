@@ -99,7 +99,7 @@ UInt32 __GetNativeModifierCount(HKModifier idx) {
 }
 
 static
-void __HKUtilsConvertModifiers(NSUInteger *mods, UInt32 count) {
+void __HKUtilsConvertModifiers(NSUInteger *mods, NSInteger count) {
   while (count-- > 0) {
     HKModifier modifier = 0;
     if (mods[count] & kCommandKey) modifier |= kCGEventFlagMaskCommand;
