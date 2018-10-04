@@ -355,7 +355,7 @@ OSStatus HKKeyMapContextWithUchrData(const UCKeyboardLayout *layout, bool revers
     for (NSUInteger idx = 0; idx < records->keyStateRecordCount; idx++) {
       NSUInteger code = (NSUInteger)CFDictionaryGetValue(deadr, (void *)idx);
       if (0 == code) {
-        spx_log_warning("Unreachable block: %tu", idx);
+        spx_log("Unreachable block: %tu", idx);
       } else {
         const UCKeyStateRecord *record = (const UCKeyStateRecord *)(data + records->keyStateRecordOffsets[idx]);
         if (record->stateZeroCharData != 0 && record->stateZeroNextState == 0) {
@@ -395,7 +395,7 @@ OSStatus HKKeyMapContextWithUchrData(const UCKeyboardLayout *layout, bool revers
               UCKeyCharSeq unicode = term->charData;
               // Should resolve sequence
               if (__HKUCHRKeyCharIsSequence(unicode)) {
-                //SPXDebug(@"WARNING: Sequence: %u", unicode & 0x3fff);
+                //spx_debug("WARNING: Sequence: %u", unicode & 0x3fff);
               } else {
                 // Get previous keycode and append dead key state
                 code = __HKUtilsFlatDead(code, term->curState);
@@ -406,7 +406,7 @@ OSStatus HKKeyMapContextWithUchrData(const UCKeyboardLayout *layout, bool revers
               entry++;
             }
           } else if (kUCKeyStateEntryRangeFormat == record->stateEntryFormat) {
-            spx_log_warning("Range entry not implemented");
+            spx_log("Range entry not implemented");
           }
         } // reverse
       }

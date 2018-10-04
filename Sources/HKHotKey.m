@@ -96,7 +96,7 @@ CFTimeInterval __HKEventTime(void) {
 
 - (void)dealloc {
   if ([self isRegistred]) {
-    SPXLogWarning(@"Releasing a registred hotkey is not safe !");
+    spx_log("Releasing a registred hotkey is not safe !");
     [self hk_invalidateTimer];
     [self setRegistred:NO];
   }
@@ -264,13 +264,13 @@ void _checkNotRegistred(HKHotKey *self) {
       if (_actionBlock)
         _actionBlock();
     } @catch (id exception) {
-      SPXLogException(exception);
+      spx_log_exception(exception);
     }
     _hkFlags.lock = 0;
     [self didInvoke];
     SPXFlagSet(_hkFlags.repeat, NO);
   } else {
-    SPXLogWarning(@"Recursive call in %@", self);
+    spx_log("Recursive call in %@", self);
     // Should we resend event ?
   }
 }

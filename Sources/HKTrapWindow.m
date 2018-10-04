@@ -102,9 +102,9 @@ NSString * const kHKTrapWindowDidCatchKeyNotification = @"kHKTrapWindowKeyCaught
   HKKeycode code = [theEvent keyCode];
   NSUInteger mask = [theEvent modifierFlags] & NSDeviceIndependentModifierFlagsMask; //0x00ff0000;
   unichar character = 0;
-  //      SPXDebug(@"Code: %u, modifier: %x", code, mask);
+  //      spx_debug("Code: %u, modifier: %x", code, mask);
   //      if (mask & NSNumericPadKeyMask) {
-  //        SPXDebug(@"NumericPad");
+  //        spx_debug("NumericPad");
   //      }
   if (mask & NSAlphaShiftKeyMask) {
     // ignore caps lock modifier

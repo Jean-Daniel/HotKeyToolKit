@@ -61,9 +61,9 @@ void _HKKeyMapUpdate(HKKeyMap *self, bool load) {
   if (!currentKeyMap) {
     currentKeyMap = [[HKKeyMap alloc] init];
     if (!currentKeyMap) {
-      SPXDebug(@"Error while initializing Keyboard Map");
+      spx_debug("Error while initializing Keyboard Map");
     } else {
-      SPXDebug(@"Keyboard Map initialized");
+      spx_debug("Keyboard Map initialized");
     }
   }
   return currentKeyMap;
@@ -277,7 +277,7 @@ void _HKKeyMapResetContext(HKKeyMap *self) {
     }
 #pragma clang diagnostic pop
 #else
-    spx_log_warning("No UCHR data found and 64 bits does not support KCHR.");
+    spx_log("No UCHR data found and 64 bits does not support KCHR.");
     err = paramErr;
 #endif
   }

@@ -69,7 +69,7 @@ BOOL _HKManagerInstallEventHandler() {
 
   OSStatus err = InstallApplicationEventHandler(_HandleHotKeyEvent, GetEventTypeCount(eventTypes), eventTypes, NULL, &ref);
   if (noErr != err) {
-    SPXLogError(@"error while installing event handler: %s", _OSStatusToStr(err));
+    spx_log_error("error while installing event handler: %s", _OSStatusToStr(err));
     return NO;
   }
 
@@ -131,12 +131,12 @@ BOOL HKHotKeyUnregister(HKHotKey *hotkey) {
 
   OSStatus err = _HKUnregisterHotKey(ref->second);
   if (noErr != err) {
-    SPXLogError(@"error while unregistering hotkey %@ : %s", hotkey, _OSStatusToStr(err));
+    spx_log_error("error while unregistering hotkey %@ : %s", hotkey, _OSStatusToStr(err));
     return NO;
   }
 
   if (HKTraceHotKeyEvents)
-    NSLog(@"Unregister HotKey: %@", hotkey);
+    spx_log("Unregister HotKey: %@", hotkey);
 
   HotKeyReferencesMap().erase(ref);
 
@@ -173,7 +173,7 @@ BOOL HKHotKeyCheckKeyCodeAndModifier(HKKeycode code, HKModifier modifier) {
   if (noErr == _HKRegisterHotKey(code, modifier, hotKeyId, &key)) {
     OSStatus err = _HKUnregisterHotKey(key);
     if (noErr != err)
-      spx_log_warning("error while unregistering hot key: %d", err);
+      spx_log("error while unregistering hot key: %d", err);
     isValid = YES;
   }
   return isValid;
@@ -213,11 +213,11 @@ OSStatus _HandleHotKeyEvent(EventHandlerCallRef nextHandler, EventRef theEvent, 
           [hotKey keyReleased:GetEventTime(theEvent)];
           break;
         default:
-          SPXDebug(@"Unknown event kind");
+          spx_debug("Unknown event kind");
           break;
       }
     } else {
-      SPXDebug(@"Invalid hotkey id!");
+      spx_debug("Invalid hotkey id!");
     }
   }
   return err;
