@@ -91,7 +91,7 @@ NSString * const kHKTrapWindowDidCatchKeyNotification = @"kHKTrapWindowKeyCaught
 }
 
 - (void)sendEvent:(NSEvent *)theEvent {
-  if (!_twFlags.trap || [theEvent type] != NSKeyDown)
+  if (!_twFlags.trap || [theEvent type] != NSEventTypeKeyDown)
     return [super sendEvent:theEvent];
 
   if (!_twFlags.resend && SPXDelegateHandle([self delegate], trapWindow:shouldTrapKeyEvent:)) {
@@ -100,15 +100,15 @@ NSString * const kHKTrapWindowDidCatchKeyNotification = @"kHKTrapWindowKeyCaught
   }
 
   HKKeycode code = [theEvent keyCode];
-  NSUInteger mask = [theEvent modifierFlags] & NSDeviceIndependentModifierFlagsMask; //0x00ff0000;
+  NSUInteger mask = [theEvent modifierFlags] & NSEventModifierFlagDeviceIndependentFlagsMask; //0x00ff0000;
   unichar character = 0;
   //      spx_debug("Code: %u, modifier: %x", code, mask);
   //      if (mask & NSNumericPadKeyMask) {
   //        spx_debug("NumericPad");
   //      }
-  if (mask & NSAlphaShiftKeyMask) {
+  if (mask & NSEventModifierFlagCapsLock) {
     // ignore caps lock modifier
-    mask &= ~NSAlphaShiftKeyMask;
+    mask &= ~NSEventModifierFlagCapsLock;
   }
   /* If verify keycode and modifier */
   bool valid = true;

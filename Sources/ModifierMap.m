@@ -21,30 +21,30 @@ static const
 HKModifierMap _kHKUtilsNativeToCococaMap = {
   .size = 8,
   .entries = {
-    {kCGEventFlagMaskCommand, NSCommandKeyMask},
-    {kCGEventFlagMaskShift, NSShiftKeyMask},
-    {kCGEventFlagMaskAlphaShift, NSAlphaShiftKeyMask},
-    {kCGEventFlagMaskAlternate, NSAlternateKeyMask},
-    {kCGEventFlagMaskControl, NSControlKeyMask},
+    {kCGEventFlagMaskCommand, NSEventModifierFlagCommand},
+    {kCGEventFlagMaskShift, NSEventModifierFlagShift},
+    {kCGEventFlagMaskAlphaShift, NSEventModifierFlagCapsLock},
+    {kCGEventFlagMaskAlternate, NSEventModifierFlagOption},
+    {kCGEventFlagMaskControl, NSEventModifierFlagControl},
     /* specials */
-    {kCGEventFlagMaskHelp, NSHelpKeyMask},
-    {kCGEventFlagMaskSecondaryFn, NSFunctionKeyMask},
-    {kCGEventFlagMaskNumericPad, NSNumericPadKeyMask},
+    {kCGEventFlagMaskHelp, NSEventModifierFlagHelp},
+    {kCGEventFlagMaskSecondaryFn, NSEventModifierFlagFunction},
+    {kCGEventFlagMaskNumericPad, NSEventModifierFlagNumericPad},
   }
 };
 static const
 HKModifierMap _kHKUtilsCocoaToNative = {
   .size = 8,
   .entries = {
-    {NSAlphaShiftKeyMask, kCGEventFlagMaskAlphaShift},
-    {NSShiftKeyMask, kCGEventFlagMaskShift},
-    {NSControlKeyMask, kCGEventFlagMaskControl},
-    {NSAlternateKeyMask, kCGEventFlagMaskAlternate},
-    {NSCommandKeyMask, kCGEventFlagMaskCommand},
+    {NSEventModifierFlagCapsLock, kCGEventFlagMaskAlphaShift},
+    {NSEventModifierFlagShift, kCGEventFlagMaskShift},
+    {NSEventModifierFlagControl, kCGEventFlagMaskControl},
+    {NSEventModifierFlagOption, kCGEventFlagMaskAlternate},
+    {NSEventModifierFlagCommand, kCGEventFlagMaskCommand},
     /* specials */
-    {NSHelpKeyMask, kCGEventFlagMaskHelp},
-    {NSFunctionKeyMask, kCGEventFlagMaskSecondaryFn},
-    {NSNumericPadKeyMask, kCGEventFlagMaskNumericPad},
+    {NSEventModifierFlagHelp, kCGEventFlagMaskHelp},
+    {NSEventModifierFlagFunction, kCGEventFlagMaskSecondaryFn},
+    {NSEventModifierFlagNumericPad, kCGEventFlagMaskNumericPad},
   }
 };
 
@@ -79,26 +79,26 @@ static const
 HKModifierMap _kHKUtilsCocoaToCarbon = {
   .size = 5,
   .entries = {
-    {NSAlphaShiftKeyMask, alphaLock},
-    {NSShiftKeyMask, shiftKey},
-    {NSControlKeyMask, controlKey},
-    {NSAlternateKeyMask, optionKey},
-    {NSCommandKeyMask, cmdKey},
+    {NSEventModifierFlagCapsLock, alphaLock},
+    {NSEventModifierFlagShift, shiftKey},
+    {NSEventModifierFlagControl, controlKey},
+    {NSEventModifierFlagOption, optionKey},
+    {NSEventModifierFlagCommand, cmdKey},
   }
 };
 static const
 HKModifierMap _kHKUtilsCarbonToCocoa = {
   .size = 8,
   .entries = {
-    {cmdKey, NSCommandKeyMask},
-    {shiftKey, NSShiftKeyMask},
-    {alphaLock, NSAlphaShiftKeyMask},
-    {optionKey, NSAlternateKeyMask},
-    {controlKey, NSControlKeyMask},
+    {cmdKey, NSEventModifierFlagCommand},
+    {shiftKey, NSEventModifierFlagShift},
+    {alphaLock, NSEventModifierFlagCapsLock},
+    {optionKey, NSEventModifierFlagOption},
+    {controlKey, NSEventModifierFlagControl},
     /* Additional mapping */
-    {rightShiftKey, NSShiftKeyMask},
-    {rightOptionKey, NSAlternateKeyMask},
-    {rightControlKey, NSControlKeyMask},
+    {rightShiftKey, NSEventModifierFlagShift},
+    {rightOptionKey, NSEventModifierFlagOption},
+    {rightControlKey, NSEventModifierFlagControl},
   }
 };
 

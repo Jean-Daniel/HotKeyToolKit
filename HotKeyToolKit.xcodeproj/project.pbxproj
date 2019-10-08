@@ -295,10 +295,13 @@
 		0867D690FE84028FC02AAC07 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0900;
+				LastUpgradeCheck = 1100;
 				TargetAttributes = {
 					1BC0940716794BF3005FEE87 = {
 						TestTargetID = 8DC2EF4F0486A6940098B216;
+					};
+					8DC2EF4F0486A6940098B216 = {
+						ProvisioningStyle = Automatic;
 					};
 				};
 			};
@@ -431,7 +434,10 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 1B5727E71B248290003441B8 /* framework.xcconfig */;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "Mac Developer";
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 460;
+				DEVELOPMENT_TEAM = 3DT6DNJE39;
 				DYLIB_COMPATIBILITY_VERSION = 2;
 				DYLIB_CURRENT_VERSION = 460;
 				FRAMEWORK_VERSION = A;
@@ -439,6 +445,7 @@
 				INSTALL_PATH = "@rpath";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.xenonium.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = HotKeyToolKit;
+				PROVISIONING_PROFILE_SPECIFIER = "";
 			};
 			name = Debug;
 		};
@@ -453,7 +460,10 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 1B5727E71B248290003441B8 /* framework.xcconfig */;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "Mac Developer";
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 460;
+				DEVELOPMENT_TEAM = 3DT6DNJE39;
 				DYLIB_COMPATIBILITY_VERSION = 2;
 				DYLIB_CURRENT_VERSION = 460;
 				FRAMEWORK_VERSION = A;
@@ -461,6 +471,7 @@
 				INSTALL_PATH = "@rpath";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.xenonium.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = HotKeyToolKit;
+				PROVISIONING_PROFILE_SPECIFIER = "";
 			};
 			name = Release;
 		};
