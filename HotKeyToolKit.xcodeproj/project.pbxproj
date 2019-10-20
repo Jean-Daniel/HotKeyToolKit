@@ -295,7 +295,7 @@
 		0867D690FE84028FC02AAC07 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 1100;
+				LastUpgradeCheck = 1110;
 				TargetAttributes = {
 					1BC0940716794BF3005FEE87 = {
 						TestTargetID = 8DC2EF4F0486A6940098B216;
@@ -312,6 +312,7 @@
 			knownRegions = (
 				en,
 				fr,
+				Base,
 			);
 			mainGroup = 0867D691FE84028FC02AAC07 /* HotKeyToolKit */;
 			productRefGroup = 034768DFFF38A50411DB9C8B /* Products */;
