@@ -435,10 +435,8 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 1B5727E71B248290003441B8 /* framework.xcconfig */;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "Mac Developer";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 460;
-				DEVELOPMENT_TEAM = 3DT6DNJE39;
 				DYLIB_COMPATIBILITY_VERSION = 2;
 				DYLIB_CURRENT_VERSION = 460;
 				FRAMEWORK_VERSION = A;
@@ -446,7 +444,6 @@
 				INSTALL_PATH = "@rpath";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.xenonium.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = HotKeyToolKit;
-				PROVISIONING_PROFILE_SPECIFIER = "";
 			};
 			name = Debug;
 		};
@@ -461,10 +458,8 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 1B5727E71B248290003441B8 /* framework.xcconfig */;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "Mac Developer";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 460;
-				DEVELOPMENT_TEAM = 3DT6DNJE39;
 				DYLIB_COMPATIBILITY_VERSION = 2;
 				DYLIB_CURRENT_VERSION = 460;
 				FRAMEWORK_VERSION = A;
@@ -472,7 +467,6 @@
 				INSTALL_PATH = "@rpath";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.xenonium.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = HotKeyToolKit;
-				PROVISIONING_PROFILE_SPECIFIER = "";
 			};
 			name = Release;
 		};
