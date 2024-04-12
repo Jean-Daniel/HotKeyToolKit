@@ -51,8 +51,8 @@ std::unordered_map<uint32_t, __unsafe_unretained HKHotKey *>&HotKeyMap() {
 
 static
 std::unordered_map<__unsafe_unretained HKHotKey *, EventHotKeyRef, spx::hash> &HotKeyReferencesMap() {
-    static auto *sHotKeyReferences = new std::unordered_map<__unsafe_unretained HKHotKey *, EventHotKeyRef, spx::hash>;
-    return *sHotKeyReferences;
+  static auto *sHotKeyReferences = new std::unordered_map<__unsafe_unretained HKHotKey *, EventHotKeyRef, spx::hash>;
+  return *sHotKeyReferences;
 }
 
 /* Debugging purpose */
@@ -110,7 +110,7 @@ BOOL HKHotKeyRegister(HKHotKey *hotkey) {
           _HKUnregisterHotKey(ref);
           return NO;
         }
-      
+
       HotKeyReferencesMap()[hotkey] = ref;
       HotKeyMap()[uid] = hotkey;
       return YES;

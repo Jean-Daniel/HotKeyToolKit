@@ -40,12 +40,12 @@
 - (void)testHotKeyRetainCount {
   HKHotKey *key2;
   {
-    HKHotKey *key = [[HKHotKey alloc] initWithUnichar:'y' modifier:NSAlternateKeyMask];
+    HKHotKey *key = [[HKHotKey alloc] initWithUnichar:'y' modifier:NSEventModifierFlagOption];
     XCTAssertTrue([key setRegistred:YES], @"%@ should be registred", key);
     /* this test can be innacurate as autorelease will bump the retain count */
     // XCTAssertTrue([key retainCount] == (unsigned)1, @"Registring key shouldn't retain it");
 
-    key2 = [[HKHotKey alloc] initWithUnichar:'y' modifier:NSAlternateKeyMask];
+    key2 = [[HKHotKey alloc] initWithUnichar:'y' modifier:NSEventModifierFlagOption];
     XCTAssertFalse([key2 setRegistred:YES], @"%@ shouldn't be registred", key2);
     /* Testing if releasing a key unregister it */
   }
@@ -55,21 +55,21 @@
 }
 
 - (void)testInvalidAccessException {
-  id key = [[HKHotKey alloc] initWithUnichar:'a' modifier:NSAlternateKeyMask];
+  id key = [[HKHotKey alloc] initWithUnichar:'a' modifier:NSEventModifierFlagOption];
   XCTAssertTrue([key setRegistred:YES], @"%@ should be registred", key);
   XCTAssertThrows([key setCharacter:'b'], @"Should throws exception when trying change and registred");
   XCTAssertThrows([key setKeycode:0], @"Should throws exception when trying change and registred");
-  XCTAssertThrows([key setModifier:NSAlternateKeyMask], @"Should throws exception when trying change and registred");
+  XCTAssertThrows([key setModifier:NSEventModifierFlagOption], @"Should throws exception when trying change and registred");
   XCTAssertTrue([key setRegistred:NO], @"%@ should be unregistred", key);
 }
 
 - (void)testEqualsKeyRegistring {
-  id key1 = [[HKHotKey alloc] initWithUnichar:'a' modifier:NSAlternateKeyMask];
-  id key2 = [[HKHotKey alloc] initWithUnichar:'a' modifier:NSAlternateKeyMask];
+  id key1 = [[HKHotKey alloc] initWithUnichar:'a' modifier:NSEventModifierFlagOption];
+  id key2 = [[HKHotKey alloc] initWithUnichar:'a' modifier:NSEventModifierFlagOption];
   XCTAssertTrue([key1 setRegistred:YES], @"%@ should be registred", key1);
   XCTAssertFalse([key2 setRegistred:YES], @"%@ shouldn't be registred", key2);
 
-  [key2 setModifier:NSShiftKeyMask];
+  [key2 setModifier:NSEventModifierFlagShift];
   XCTAssertTrue([key2 setRegistred:YES], @"%@ should be registred", key2);
   XCTAssertTrue([key2 setRegistred:NO], @"%@ should be unregistred", key2);
   XCTAssertTrue([key1 setRegistred:NO], @"%@ should be unregistred", key1);

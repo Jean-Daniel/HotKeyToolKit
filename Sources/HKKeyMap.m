@@ -158,8 +158,7 @@ void _ShowTISPalette(CFStringRef name, NSString *identifier) {
 HK_INLINE
 void _HKKeyMapResetContext(HKKeyMap *self) {
   if (self->_ctxt) {
-    if (self->_ctxt->dealloc)
-      self->_ctxt->dealloc(self->_ctxt);
+    HKKeyMapContextDealloc(self->_ctxt);
     free(self->_ctxt);
     self->_ctxt = NULL;
   }
@@ -188,8 +187,8 @@ void _HKKeyMapResetContext(HKKeyMap *self) {
   HKModifier mod[4];
   NSUInteger cnt = 0;
   _HKKeyMapUpdate(self, true);
-  if (_ctxt && _ctxt->reverseMap)
-    cnt = _ctxt->reverseMap(_ctxt->data, character, key, mod, 4);
+  if (_ctxt)
+    cnt = HKKeycodesForCharacterFunction(_ctxt, character, key, mod, 4);
   /* if not found, or need more than 2 keystroke */
   if (!cnt || cnt > 2 || kHKInvalidVirtualKeyCode == key[0])
     return kHKInvalidVirtualKeyCode;
@@ -210,8 +209,8 @@ void _HKKeyMapResetContext(HKKeyMap *self) {
     HKKeycode keycode = HKMapGetSpecialKeyCodeForCharacter(character);
     if (keycode == kHKInvalidVirtualKeyCode) {
       _HKKeyMapUpdate(self, true);
-      if (_ctxt && _ctxt->reverseMap)
-        count = _ctxt->reverseMap(_ctxt->data, character, keys, modifiers, maxcount);
+      if (_ctxt)
+        count = HKKeycodesForCharacterFunction(_ctxt, character, keys, modifiers, maxcount);
     } else {
       count = 1;
       if (maxcount > 0) {
@@ -231,8 +230,8 @@ void _HKKeyMapResetContext(HKKeyMap *self) {
   UniChar unicode = !modifiers ? HKMapGetSpecialCharacterForKeycode(keycode) : kHKNilUnichar;
   if (kHKNilUnichar == unicode) {
     _HKKeyMapUpdate(self, true);
-    if (_ctxt && _ctxt->map)
-      unicode = _ctxt->map(_ctxt->data, keycode, modifiers);
+    if (_ctxt)
+      unicode = HKCharacterForKeyCodeFunction(_ctxt, keycode, modifiers);
   }
   return unicode;
 }
@@ -252,37 +251,13 @@ void _HKKeyMapResetContext(HKKeyMap *self) {
 }
 
 - (void)hk_loadLayout {
-  OSStatus err = noErr;
-  _ctxt = calloc(1, sizeof(*_ctxt));
+  spx_assert(_ctxt == NULL, "trying to reinit keymap context");
   CFDataRef uchr = TISGetInputSourceProperty(_layout, kTISPropertyUnicodeKeyLayoutData);
   if (uchr) {
-    err = HKKeyMapContextWithUchrData((const UCKeyboardLayout *)CFDataGetBytePtr(uchr), true, _ctxt);
+    _ctxt = HKKeyMapContextCreateWithUchrData(uchr);
   } else {
-#if !__LP64__
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated"
-    /* maybe this is kchr data only ... */
-    KeyboardLayoutRef ref;
-    // FIXME: should find a better way to get matching KCHR.
-    err = KLGetCurrentKeyboardLayout(&ref);
-    // err = KLGetKeyboardLayoutWithName(???, &ref);
-    if (noErr == err) {
-      const void *data = NULL;
-      err = KLGetKeyboardLayoutProperty(ref, kKLKCHRData, (void *)&data);
-      if (noErr == err)
-        err = HKKeyMapContextWithKCHRData(data, true, _ctxt);
-    }
-    if (noErr != err) {
-      spx_log_error("Error while trying to get layout data: %s", GetMacOSStatusErrorString(err));
-    }
-#pragma clang diagnostic pop
-#else
     spx_log("No UCHR data found and 64 bits does not support KCHR.");
-    err = paramErr;
-#endif
   }
-  if (noErr != err)
-    memset(_ctxt, 0, sizeof(*_ctxt));
 }
 
 @end

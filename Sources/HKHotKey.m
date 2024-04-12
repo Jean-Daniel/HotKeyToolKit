@@ -346,7 +346,7 @@ io_connect_t _HKHIDGetSystemService(void) {
   
   if (!sSystemService) {
     mach_port_t iter;
-    kern_return_t kr = IOServiceGetMatchingServices(kIOMasterPortDefault, IOServiceMatching(kIOHIDSystemClass), &iter);
+    kern_return_t kr = IOServiceGetMatchingServices(kIOMainPortDefault, IOServiceMatching(kIOHIDSystemClass), &iter);
     if (KERN_SUCCESS == kr) {
       mach_port_t service = IOIteratorNext(iter);
       if (service) {
@@ -361,32 +361,28 @@ io_connect_t _HKHIDGetSystemService(void) {
   return sSystemService;
 }
 
-NSTimeInterval HKGetSystemKeyRepeatInterval(void) {
-  uint64_t value = 0;
+static
+NSTimeInterval _HKGetSystemKeyProperty(CFStringRef property) {
   NSTimeInterval interval = -1;
   io_connect_t service = _HKHIDGetSystemService();
   if (service) {
-    IOByteCount size = 0;
-    kern_return_t kr = IOHIDGetParameter(service, CFSTR(kIOHIDKeyRepeatKey),
-                                         (IOByteCount)sizeof(value), &value, &size);
+    CFTypeRef value = NULL;
+    kern_return_t kr = IOHIDCopyCFTypeParameter(service, property, &value);
     /* convert nano into seconds */
-    if (KERN_SUCCESS == kr && size == sizeof(value))
-      interval = (double)value / 1e9;
+    if (KERN_SUCCESS == kr && value != NULL) {
+      double intervalNs = 0;
+      if (CFNumberGetValue(value, kCFNumberDoubleType, &intervalNs))
+        interval = (double)intervalNs / 1e9;
+      CFRelease(value);
+    }
   }
   return interval;
 }
 
+NSTimeInterval HKGetSystemKeyRepeatInterval(void) {
+  return _HKGetSystemKeyProperty(CFSTR(kIOHIDKeyRepeatKey));
+}
+
 NSTimeInterval HKGetSystemInitialKeyRepeatInterval(void) {
-  uint64_t value = 0;
-  NSTimeInterval interval = -1;
-  io_connect_t service = _HKHIDGetSystemService();
-  if (service) {
-    IOByteCount size = 0;
-    kern_return_t kr = IOHIDGetParameter(service, CFSTR(kIOHIDInitialKeyRepeatKey),
-                                         (IOByteCount)sizeof(value), &value, &size);
-    /* convert nano into seconds */
-    if (KERN_SUCCESS == kr && size == sizeof(value))
-      interval = (double)value / 1e9;
-  }
-  return interval;
+  return _HKGetSystemKeyProperty(CFSTR(kIOHIDInitialKeyRepeatKey));
 }

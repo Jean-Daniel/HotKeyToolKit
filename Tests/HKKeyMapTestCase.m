@@ -56,7 +56,7 @@
   HKModifier modifier;
   HKKeycode scode = [keymap keycodeForCharacter:'S' modifiers:&modifier];
   XCTAssertTrue(scode == keycode, @"Invalid keycode for reverse mapping");
-  XCTAssertTrue(modifier == NSShiftKeyMask, @"Invalid modifier for reverse mapping");
+  XCTAssertTrue(modifier == NSEventModifierFlagShift, @"Invalid modifier for reverse mapping");
 
   keycode = [keymap keycodeForCharacter:'^' modifiers:NULL];
   XCTAssertTrue(keycode != kHKInvalidVirtualKeyCode, @"'^'unichar to deadkey does not return a valid keycode");
